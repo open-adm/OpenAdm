@@ -10,10 +10,10 @@ public static class DependencyInjectTelemetry
 {
     public static IServiceCollection AddTelemetria(this IServiceCollection services, IConfiguration configuration)
     {
-        // if (configuration["TelemetriaAtiva"]?.ToUpper() != "TRUE")
-        // {
-        //     return services;
-        // }
+        if (!configuration.GetValue<bool>("TelemetriaAtiva"))
+        {
+            return services;
+        }
 
         services.AddOpenTelemetry()
             .ConfigureResource(resource =>
