@@ -59,6 +59,8 @@ builder.Services
     .InjectHttpClient(urlApiCep, urlApiViaCep,
         builder.Configuration);
 
+builder.Services.AddTelemetria(builder.Configuration);
+
 var app = builder.Build();
 
 if (builder.Configuration["NaoSubirSwagger"]?.ToUpper() != "TRUE")
