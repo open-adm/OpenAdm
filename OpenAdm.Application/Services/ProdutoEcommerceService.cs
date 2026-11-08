@@ -2,6 +2,7 @@ using OpenAdm.Application.Dtos.Produtos;
 using OpenAdm.Application.Interfaces;
 using OpenAdm.Application.Interfaces.Ecommerce;
 using OpenAdm.Domain.Entities;
+using OpenAdm.Domain.Extensions;
 using OpenAdm.Domain.Helpers;
 using OpenAdm.Domain.Interfaces;
 using OpenAdm.Domain.Model;
@@ -163,8 +164,8 @@ public class ProdutoEcommerceService : IProdutoEcommerceService
 
             if (produtoViewModel.Pesos.Count > 0 || produtoViewModel.Tamanhos.Count > 0)
             {
-                produtoViewModel.Pesos = produtoViewModel.Pesos.OrderBy(x => x.Numero).ToList();
-                produtoViewModel.Tamanhos = produtoViewModel.Tamanhos.OrderBy(x => x.Numero).ToList();
+                produtoViewModel.Pesos = produtoViewModel.Pesos.OrderBy(x => x.Descricao, Comparer<string>.Create(StringExtensions.Compare)).ToList();
+                produtoViewModel.Tamanhos = produtoViewModel.Tamanhos.OrderBy(x => x.Descricao, Comparer<string>.Create(StringExtensions.Compare)).ToList();
                 
                 resultadoViewModel.Values.Add(produtoViewModel);
             }

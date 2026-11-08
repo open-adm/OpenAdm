@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using OpenAdm.Domain.Exceptions;
 
 namespace OpenAdm.Domain.Extensions;
@@ -14,6 +15,19 @@ public static class StringExtensions
                              value[..2],
                              value.Substring(2, 5),
                              value.Substring(7, 4));
+    }
+    
+    private static readonly CompareInfo CompareInfo =
+        CultureInfo.GetCultureInfo("pt-BR").CompareInfo;
+    
+    public static int Compare(string? x, string? y)
+    {
+        return CompareInfo.Compare(
+            x,
+            y,
+            CompareOptions.NumericOrdering |
+            CompareOptions.IgnoreCase
+        );
     }
 
     public static string Limitar(this string value, int length)
