@@ -32,12 +32,12 @@ public class UpdateStatusPedidoService : IUpdateStatusPedidoService
         var statusAnterior = pedido.StatusPedido;
         pedido.UpdateStatus(updateStatusPedidoDto.StatusPedido);
 
-        if (statusAnterior != pedido.StatusPedido)
-        {
-            pedido.Historicos.Add(PedidoHistorico.Novo(
-                pedido.Id,
-                $"Status do pedido alterado de {statusAnterior} para {pedido.StatusPedido}."));
-        }
+        //if (statusAnterior != pedido.StatusPedido)
+        //{
+        //    pedido.Historicos.Add(PedidoHistorico.Novo(
+        //        pedido.Id,
+        //        $"Status do pedido alterado de {statusAnterior} para {pedido.StatusPedido}."));
+        //}
 
         _pedidoRepository.Update(pedido);
 
