@@ -12,7 +12,7 @@ OpenAdm is a multi-project .NET solution (`OpenAdm.sln`) organized by layer. `Op
 - `dotnet run --project OpenAdm.Worker/OpenAdm.Worker.csproj`: start the background worker.
 
 ## Coding Style & Naming Conventions
-Projects target `net10.0` with nullable reference types and implicit usings enabled. Use four-space indentation and standard C# conventions: PascalCase for classes, methods, properties, DTOs, and enums; camelCase for locals and parameters; interfaces prefixed with `I`. Prefer `DateTime.UtcNow` over `DateTime.Now` when recording application timestamps. Keep Portuguese domain names consistent with existing files, for example `PedidoService`, `ConfiguracaoDeFreteController`, and `PaginacaoPedidoDto`.
+Projects target `net11.0` with nullable reference types and implicit usings enabled. Use four-space indentation and standard C# conventions: PascalCase for classes, methods, properties, DTOs, and enums; camelCase for locals and parameters; interfaces prefixed with `I`. Prefer `DateTime.UtcNow` over `DateTime.Now` when recording application timestamps. Keep Portuguese domain names consistent with existing files, for example `PedidoService`, `ConfiguracaoDeFreteController`, and `PaginacaoPedidoDto`.
 
 Use `ResultPartner<T>` as the standard return type for new application service operations that can return expected business errors. Controllers should convert it with `ToActionResult()` and declare typed `ProducesResponseType` attributes for success and error responses in Swagger.
 
