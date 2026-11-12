@@ -60,7 +60,8 @@ public class TamanhoRepository : GenericRepository<Tamanho>, ITamanhoRepository
         return await ParceiroContext
             .Tamanhos
             .AsNoTracking()
-            .OrderByDescending(x => x.Numero)
+            .OrderBy(x => x.OrdemExibixao)
+            .ThenBy(x => x.Numero)
             .ToListAsync();
     }
 

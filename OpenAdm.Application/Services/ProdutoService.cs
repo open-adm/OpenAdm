@@ -190,7 +190,8 @@ public class ProdutoService : IProdutoService
             updateProdutoDto.Referencia,
             foto,
             nomeFoto,
-            updateProdutoDto.VendaSomenteComEstoqueDisponivel);
+            updateProdutoDto.VendaSomenteComEstoqueDisponivel,
+            updateProdutoDto.OrdemExibixao);
 
         var resultPesos = await _pesosProdutosRepository.DeleteRangeAsync(produto.Id);
         var resultTamanhos = await _tamanhosProdutoRepository.DeleteRangeAsync(produto.Id);

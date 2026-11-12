@@ -9,6 +9,7 @@ public class CategoriaViewModel : BaseModel
     public string? Foto { get; set; }
     public bool InativoEcommerce { get; set; }
     public bool Ativo { get; set; }
+    public int OrdemExibixao { get; set; } = 0;
     public List<ProdutoViewModel>? Produtos { get; set; }
 
     public CategoriaViewModel ToModel(Categoria entity)
@@ -22,6 +23,7 @@ public class CategoriaViewModel : BaseModel
         Produtos = entity.Produtos.Select(x => new ProdutoViewModel().ToModel(x)).ToList();
         InativoEcommerce = entity.InativoEcommerce;
         Ativo = !entity.InativoEcommerce;
+        OrdemExibixao = entity.OrdemExibixao;
 
         return this;
     }
@@ -36,6 +38,7 @@ public class CategoriaViewModel : BaseModel
         Descricao = entity.Descricao;
         Foto = entity.Foto;
         InativoEcommerce = !entity.InativoEcommerce;
+        OrdemExibixao = entity.OrdemExibixao;
 
         return this;
     }

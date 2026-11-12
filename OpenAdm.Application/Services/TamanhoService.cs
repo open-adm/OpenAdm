@@ -84,7 +84,7 @@ public class TamanhoService : ITamanhoService
                       ?? throw new ExceptionApi("Não foi possível localizar o tamanho");
 
         tamanho.Update(updateTamanhoDto.Descricao, updateTamanhoDto.PesoReal, updateTamanhoDto.AlturaReal,
-            updateTamanhoDto.LarguraReal, updateTamanhoDto.ComprimentoReal);
+            updateTamanhoDto.LarguraReal, updateTamanhoDto.ComprimentoReal, updateTamanhoDto.OrdemExibixao);
 
         await _tamanhoRepository.UpdateAsync(tamanho);
         return new TamanhoViewModel().ToModel(tamanho);

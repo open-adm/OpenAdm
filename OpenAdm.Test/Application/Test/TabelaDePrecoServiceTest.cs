@@ -18,12 +18,12 @@ public class TabelaDePrecoServiceTest
 
         var pesos = new List<Peso>()
         {
-            new Peso(pesoId, date, date, 0, "Peso", 0, null, null, null, true)
+            new Peso(pesoId, date, date, 0, "Peso", 0, null, null, null, true, 0)
         };
 
         var tamanhos = new List<Tamanho>()
         {
-            new Tamanho(tamanhoId, date, date, 0, "Tamanho", 0, null, null, null, true)
+            new Tamanho(tamanhoId, date, date, 0, "Tamanho", 0, null, null, null, true, 0)
         };
 
         var tabelaDePrecoDto = new CreateTabelaDePrecoDto()

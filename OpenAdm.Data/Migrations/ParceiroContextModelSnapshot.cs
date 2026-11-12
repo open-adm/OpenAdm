@@ -58,6 +58,11 @@ namespace OpenAdm.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Numero"));
 
+                    b.Property<int>("OrdemExibixao")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
                     b.HasKey("Id");
 
                     b.HasIndex("Descricao");
@@ -728,6 +733,11 @@ namespace OpenAdm.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Numero"));
 
+                    b.Property<int>("OrdemExibixao")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
                     b.Property<decimal?>("PesoReal")
                         .HasPrecision(12, 2)
                         .HasColumnType("numeric(12,2)");
@@ -805,6 +815,11 @@ namespace OpenAdm.Data.Migrations
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Numero"));
+
+                    b.Property<int>("OrdemExibixao")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("Referencia")
                         .HasMaxLength(255)
@@ -986,6 +1001,11 @@ namespace OpenAdm.Data.Migrations
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Numero"));
+
+                    b.Property<int>("OrdemExibixao")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
 
                     b.Property<decimal?>("PesoReal")
                         .HasPrecision(12, 2)

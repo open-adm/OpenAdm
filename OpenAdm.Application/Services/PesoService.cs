@@ -94,7 +94,7 @@ public class PesoService : IPesoService
                    ?? throw new ExceptionApi("Não foi possível localizar o peso");
 
         peso.Update(updatePesoDto.Descricao, updatePesoDto.PesoReal, updatePesoDto.AlturaReal,
-            updatePesoDto.LarguraReal, updatePesoDto.ComprimentoReal);
+            updatePesoDto.LarguraReal, updatePesoDto.ComprimentoReal, updatePesoDto.OrdemExibixao);
 
         await _pesoRepository.UpdateAsync(peso);
 

@@ -155,7 +155,8 @@ public class ProdutoRepository(ParceiroContext parceiroContext)
                     .Select(tm =>
                         new Tamanho(tm.Tamanho.Id, tm.Tamanho.DataDeCriacao, tm.Tamanho.DataDeAtualizacao,
                             tm.Tamanho.Numero, tm.Tamanho.Descricao, tm.Tamanho.PesoReal, tm.Tamanho.AlturaReal,
-                            tm.Tamanho.LarguraReal, tm.Tamanho.ComprimentoReal, tm.Tamanho.Ativo)
+                            tm.Tamanho.LarguraReal, tm.Tamanho.ComprimentoReal, tm.Tamanho.Ativo,
+                            tm.Tamanho.OrdemExibixao)
                     )
                     .ToList();
 
@@ -164,7 +165,8 @@ public class ProdutoRepository(ParceiroContext parceiroContext)
                     .Select(tm =>
                         new Peso(tm.Peso.Id, tm.Peso.DataDeCriacao, tm.Peso.DataDeAtualizacao, tm.Peso.Numero,
                             tm.Peso.Descricao, tm.Peso.PesoReal, tm.Peso.AlturaReal,
-                            tm.Peso.LarguraReal, tm.Peso.ComprimentoReal, tm.Peso.Ativo)
+                            tm.Peso.LarguraReal, tm.Peso.ComprimentoReal, tm.Peso.Ativo,
+                            tm.Peso.OrdemExibixao)
                     )
                     .ToList();
             });
@@ -236,7 +238,8 @@ public class ProdutoRepository(ParceiroContext parceiroContext)
                 .Select(tm =>
                     new Tamanho(tm.Tamanho.Id, tm.Tamanho.DataDeCriacao, tm.Tamanho.DataDeAtualizacao,
                         tm.Tamanho.Numero, tm.Tamanho.Descricao, tm.Tamanho.PesoReal, tm.Tamanho.AlturaReal,
-                        tm.Tamanho.LarguraReal, tm.Tamanho.ComprimentoReal, tm.Tamanho.Ativo)
+                        tm.Tamanho.LarguraReal, tm.Tamanho.ComprimentoReal, tm.Tamanho.Ativo,
+                        tm.Tamanho.OrdemExibixao)
                 )
                 .ToList();
 
@@ -245,7 +248,8 @@ public class ProdutoRepository(ParceiroContext parceiroContext)
                 .Select(tm =>
                     new Peso(tm.Peso.Id, tm.Peso.DataDeCriacao, tm.Peso.DataDeAtualizacao, tm.Peso.Numero,
                         tm.Peso.Descricao, tm.Peso.PesoReal, tm.Peso.AlturaReal,
-                        tm.Peso.LarguraReal, tm.Peso.ComprimentoReal, tm.Peso.Ativo)
+                        tm.Peso.LarguraReal, tm.Peso.ComprimentoReal, tm.Peso.Ativo,
+                        tm.Peso.OrdemExibixao)
                 )
                 .ToList();
         }

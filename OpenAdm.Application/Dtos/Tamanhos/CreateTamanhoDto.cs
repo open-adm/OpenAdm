@@ -10,11 +10,12 @@ public class CreateTamanhoDto
     public decimal? AlturaReal { get; set; }
     public decimal? LarguraReal { get; set; }
     public decimal? ComprimentoReal { get; set; }
+    public int OrdemExibixao { get; set; } = 0;
 
     public Tamanho ToEntity()
     {
         var date = DateTime.UtcNow;
         return new Tamanho(Guid.NewGuid(), date, date, 0, Descricao, PesoReal, AlturaReal, LarguraReal,
-            ComprimentoReal, true);
+            ComprimentoReal, true, OrdemExibixao);
     }
 }

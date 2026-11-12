@@ -16,7 +16,8 @@ public sealed class Produto : BaseEntity
         string? urlFoto,
         string? nomeFoto,
         bool vendaSomenteComEstoqueDisponivel,
-        bool ativo)
+        bool ativo,
+        int ordemExibixao)
         : base(id, dataDeCriacao, dataDeAtualizacao, numero)
     {
         Descricao = descricao;
@@ -27,6 +28,7 @@ public sealed class Produto : BaseEntity
         NomeFoto = nomeFoto;
         VendaSomenteComEstoqueDisponivel = vendaSomenteComEstoqueDisponivel;
         Ativo = ativo;
+        OrdemExibixao = ordemExibixao;
     }
 
     public string Descricao { get; private set; }
@@ -42,6 +44,7 @@ public sealed class Produto : BaseEntity
     public string? NomeFoto { get; private set; }
     public bool VendaSomenteComEstoqueDisponivel { get; private set; }
     public bool Ativo { get; private set; }
+    public int OrdemExibixao { get; private set; }
 
     public void InativarAtivar(bool ativo)
     {
@@ -60,7 +63,8 @@ public sealed class Produto : BaseEntity
         string? referencia,
         string? urlFoto,
         string? nomeFoto,
-        bool vendaSomenteComEstoqueDisponivel)
+        bool vendaSomenteComEstoqueDisponivel,
+        int ordemExibixao)
     {
         UrlFoto = urlFoto;
         Descricao = descricao;
@@ -69,5 +73,6 @@ public sealed class Produto : BaseEntity
         Referencia = referencia;
         NomeFoto = nomeFoto;
         VendaSomenteComEstoqueDisponivel = vendaSomenteComEstoqueDisponivel;
+        OrdemExibixao = ordemExibixao;
     }
 }

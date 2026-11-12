@@ -18,6 +18,7 @@ public class ProdutoViewModel : BaseModel
     public decimal? Peso { get; set; }
     public bool VendaSomenteComEstoqueDisponivel { get; set; }
     public bool Ativo { get; set; }
+    public int OrdemExibixao { get; set; } = 0;
 
     public ProdutoViewModel ToModel(Produto entity)
     {
@@ -46,6 +47,7 @@ public class ProdutoViewModel : BaseModel
         CategoriaId = entity.CategoriaId;
         Referencia = entity.Referencia;
         Ativo = entity.Ativo;
+        OrdemExibixao = entity.OrdemExibixao;
         return this;
     }
 
@@ -76,6 +78,7 @@ public class ProdutoViewModel : BaseModel
         Referencia = entity.Referencia;
         VendaSomenteComEstoqueDisponivel = entity.VendaSomenteComEstoqueDisponivel;
         Ativo = entity.Ativo;
+        OrdemExibixao = entity.OrdemExibixao;
         return this;
     }
 }

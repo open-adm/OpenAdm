@@ -10,10 +10,12 @@ public class CreatePesoDto
     public decimal? AlturaReal { get; set; }
     public decimal? LarguraReal { get; set; }
     public decimal? ComprimentoReal { get; set; }
+    public int OrdemExibixao { get; set; } = 0;
 
     public Peso ToEntity()
     {
         var date = DateTime.UtcNow;
-        return new Peso(Guid.NewGuid(), date, date, 0, Descricao, PesoReal, AlturaReal, LarguraReal, ComprimentoReal, true);
+        return new Peso(Guid.NewGuid(), date, date, 0, Descricao, PesoReal, AlturaReal, LarguraReal, ComprimentoReal, true,
+            OrdemExibixao);
     }
 }

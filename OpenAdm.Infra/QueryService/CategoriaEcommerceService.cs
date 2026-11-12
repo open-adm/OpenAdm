@@ -20,6 +20,8 @@ public class CategoriaEcommerceService : ICategoriaEcommerceService
             .Categorias
             .AsNoTracking()
             .Where(x => !x.InativoEcommerce)
+            .OrderBy(x => x.OrdemExibixao)
+            .ThenBy(x => x.Numero)
             .Select(x => new CategoriaEcommerceQuery()
             {
                 Descricao = x.Descricao,
@@ -34,6 +36,7 @@ public class CategoriaEcommerceService : ICategoriaEcommerceService
             .Categorias
             .AsNoTracking()
             .Where(x => !x.InativoEcommerce)
+            .OrderBy(x => x.OrdemExibixao)
             .Select(x => new CategoriaEcommerceHomeQuery()
             {
                 Descricao = x.Descricao,

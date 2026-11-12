@@ -41,8 +41,9 @@ public class ItemTabelaDePrecoServiceTest
     public async Task CreateItemTabelaDePrecoAsync_DeveRetornarItemCompleto()
     {
         var produto = ProdutoBuilder.Init().SemDescricao("Produto").Build();
-        var peso = new Peso(Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow, 1, "1 kg", 1, null, null, null, true);
-        var tamanho = new Tamanho(Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow, 1, "M", null, null, null, null, true);
+        var peso = new Peso(Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow, 1, "1 kg", 1, null, null, null, true, 0);
+        var tamanho = new Tamanho(Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow, 1, "M", null, null, null, null,
+            true, 0);
         var itemCompleto = new ItemTabelaDePreco(
             Guid.NewGuid(),
             DateTime.UtcNow,
@@ -128,5 +129,4 @@ public class ItemTabelaDePrecoServiceTest
     }
 
     private ItemTabelaDePrecoService CriarService() => new(_repository.Object);
-
 }

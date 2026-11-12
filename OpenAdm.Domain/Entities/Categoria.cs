@@ -12,13 +12,15 @@ public sealed class Categoria : BaseEntity
         string descricao,
         string? foto,
         string? nomeFoto,
-        bool inativoEcommerce)
+        bool inativoEcommerce,
+        int ordemExibixao)
         : base(id, dataDeCriacao, dataDeAtualizacao, numero)
     {
         Descricao = descricao;
         Foto = foto;
         NomeFoto = nomeFoto;
         InativoEcommerce = inativoEcommerce;
+        OrdemExibixao = ordemExibixao;
     }
 
     public void InativarAtivarEcommerce()
@@ -26,17 +28,19 @@ public sealed class Categoria : BaseEntity
         InativoEcommerce = !InativoEcommerce;
     }
 
-    public void Update(string descricao, string? foto, string? nomeFoto, bool inativoEcommerce)
+    public void Update(string descricao, string? foto, string? nomeFoto, bool inativoEcommerce, int ordemExibixao)
     {
         Descricao = descricao;
         NomeFoto = nomeFoto;
         Foto = foto;
         InativoEcommerce = inativoEcommerce;
+        OrdemExibixao = ordemExibixao;
     }
 
     public string Descricao { get; private set; }
     public string? Foto { get; private set; }
     public string? NomeFoto { get; private set; }
-    public bool InativoEcommerce { get; private set; } = false;
+    public bool InativoEcommerce { get; private set; }
+    public int OrdemExibixao { get; private set; }
     public List<Produto> Produtos { get; set; } = [];
 }

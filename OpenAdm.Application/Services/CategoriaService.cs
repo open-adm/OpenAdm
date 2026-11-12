@@ -103,7 +103,8 @@ public class CategoriaService : ICategoriaService
             foto = await _uploadImageBlobClient.UploadImageAsync(updateCategoriaDto.NovaFoto, nomeFoto);
         }
 
-        categoria.Update(updateCategoriaDto.Descricao, foto, nomeFoto, updateCategoriaDto.InativoEcommerce);
+        categoria.Update(updateCategoriaDto.Descricao, foto, nomeFoto, updateCategoriaDto.InativoEcommerce,
+            updateCategoriaDto.OrdemExibixao);
 
         await _categoriaRepository.UpdateAsync(categoria);
 

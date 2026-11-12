@@ -81,13 +81,10 @@ public class PesoCached : IPesoRepository
         {
             pesos = await _pesoRepository.GetPesosAsync();
 
-            if (pesos != null)
-            {
-                await _cachedService.SetListItemAsync(_keyList, pesos);
-            }
+            await _cachedService.SetListItemAsync(_keyList, pesos);
         }
 
-        return pesos ?? new List<Peso>();
+        return pesos;
     }
 
     public async Task<IDictionary<Guid, string>> GetDescricaoPesosAsync(IList<Guid> ids)

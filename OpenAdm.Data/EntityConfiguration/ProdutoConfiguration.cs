@@ -33,6 +33,8 @@ public class ProdutoConfiguration : IEntityTypeConfiguration<Produto>
             .HasDefaultValue(null);
         builder.Property(x => x.Ativo)
             .HasDefaultValue(true);
+        builder.Property(x => x.OrdemExibixao)
+            .HasDefaultValue(0);
         builder.HasMany(x => x.Pesos)
             .WithMany(x => x.Produtos)
             .UsingEntity<PesoProduto>();

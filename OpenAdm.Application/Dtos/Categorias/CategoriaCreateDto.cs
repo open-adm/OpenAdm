@@ -10,6 +10,7 @@ public class CategoriaCreateDto
     public string Descricao { get; set; } = string.Empty;
 
     public string? NovaFoto { get; set; }
+    public int OrdemExibixao { get; set; } = 0;
 
     public void Validar()
     {

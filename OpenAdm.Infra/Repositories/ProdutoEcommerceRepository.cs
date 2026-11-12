@@ -44,7 +44,9 @@ public class ProdutoEcommerceRepository : IProdutoEcommerceRepository
 
         var count = await query.CountAsync();
         var dados = await query
-            .OrderBy(x => x.Referencia)
+            .OrderBy(x => x.Categoria.OrdemExibixao)
+            .ThenBy(x => x.OrdemExibixao)
+            .ThenBy(x => x.Referencia)
             .Skip((page - 1) * Take)
             .Take(Take)
             .ToListAsync();

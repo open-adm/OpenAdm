@@ -31,6 +31,7 @@ public class PesoTamanhoEcommerceModel
 {
     public Guid Id { get; set; }
     public long Numero { get; set; }
+    public int OrdemExibicao { get; set; }
     public decimal? ValorUnitario { get; set; }
     public decimal? QuantidadeEstoqueDisponivel { get; set; }
     public decimal? Quantidade { get; set; }

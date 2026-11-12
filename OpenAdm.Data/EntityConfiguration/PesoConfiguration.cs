@@ -25,6 +25,8 @@ public class PesoConfiguration : IEntityTypeConfiguration<Peso>
 
         builder.Property(x => x.Ativo)
             .HasDefaultValue(true);
+        builder.Property(x => x.OrdemExibixao)
+            .HasDefaultValue(0);
 
         builder.Property(x => x.PesoReal)
             .HasPrecision(12, 2);

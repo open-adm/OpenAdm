@@ -90,7 +90,8 @@ public class ProdutoEcommerceService : IProdutoEcommerceService
                 {
                     Descricao = tamanho.Descricao,
                     Id = tamanho.Id,
-                    Numero = tamanho.Numero
+                    Numero = tamanho.Numero,
+                    OrdemExibicao = tamanho.OrdemExibixao
                 };
 
                 if (precoPorTamanho.TryGetValue((produto.Id, tamanho.Id), out var preco))
@@ -129,14 +130,15 @@ public class ProdutoEcommerceService : IProdutoEcommerceService
                 {
                     Descricao = peso.Descricao,
                     Id = peso.Id,
-                    Numero = peso.Numero
+                    Numero = peso.Numero,
+                    OrdemExibicao = peso.OrdemExibixao
                 };
 
                 if (precoPorPeso.TryGetValue((produto.Id, peso.Id), out var preco))
                 {
                     pesoViewModel.ValorUnitario = isAtacado ? preco.ValorUnitarioAtacado : preco.ValorUnitarioVarejo;
                 }
-                
+
                 var estoque = estoques.FirstOrDefault(x =>
                     x.ProdutoId == produto.Id &&
                     x.PesoId == peso.Id);
@@ -164,9 +166,11 @@ public class ProdutoEcommerceService : IProdutoEcommerceService
 
             if (produtoViewModel.Pesos.Count > 0 || produtoViewModel.Tamanhos.Count > 0)
             {
-                produtoViewModel.Pesos = produtoViewModel.Pesos.OrderBy(x => x.Descricao, Comparer<string>.Create(StringExtensions.Compare)).ToList();
-                produtoViewModel.Tamanhos = produtoViewModel.Tamanhos.OrderBy(x => x.Descricao, Comparer<string>.Create(StringExtensions.Compare)).ToList();
-                
+                produtoViewModel.Pesos = produtoViewModel.Pesos.OrderBy(x => x.OrdemExibicao)
+                    .ThenBy(x => x.Descricao, Comparer<string>.Create(StringExtensions.Compare)).ToList();
+                produtoViewModel.Tamanhos = produtoViewModel.Tamanhos.OrderBy(x => x.OrdemExibicao)
+                    .ThenBy(x => x.Descricao, Comparer<string>.Create(StringExtensions.Compare)).ToList();
+
                 resultadoViewModel.Values.Add(produtoViewModel);
             }
         }

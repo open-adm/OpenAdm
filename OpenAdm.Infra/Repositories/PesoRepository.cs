@@ -68,7 +68,8 @@ public class PesoRepository : GenericRepository<Peso>, IPesoRepository
             .Pesos
             .AsNoTracking()
             .Where(x => x.Ativo)
-            .OrderByDescending(x => x.Numero)
+            .OrderBy(x => x.OrdemExibixao)
+                .ThenBy(x => x.Numero)
             .ToListAsync();
     }
 
