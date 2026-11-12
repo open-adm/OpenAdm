@@ -14,4 +14,6 @@ public interface ICategoriaService
     Task<CategoriaViewModel> UpdateCategoriaAsync(UpdateCategoriaDto updateCategoriaDto);
     Task<CategoriaViewModel> CreateCategoriaAsync(CategoriaCreateDto categoriaCreateDto);
     Task<PaginacaoViewModel<CategoriaViewModel>> GetPaginacaoAsync(FilterModel<Categoria> paginacaoCategoriaDto);
+    Task<IList<OrdemExibicaoModel>> GetCategoriasParaOrdemExibicaoAsync();
+    Task AtualizarOrdemExibicaoAsync(OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto);
 }

@@ -28,6 +28,11 @@ public sealed class Categoria : BaseEntity
         InativoEcommerce = !InativoEcommerce;
     }
 
+    public void AlterarOrdemExibicao(int ordemExibicao)
+    {
+        OrdemExibixao = ordemExibicao;
+    }
+
     public void Update(string descricao, string? foto, string? nomeFoto, bool inativoEcommerce, int ordemExibixao)
     {
         Descricao = descricao;

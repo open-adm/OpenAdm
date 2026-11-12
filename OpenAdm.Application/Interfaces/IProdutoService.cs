@@ -17,4 +17,6 @@ public interface IProdutoService
     Task DeleteProdutoAsync(Guid id);
     Task<ProdutoViewModel> UpdateProdutoAsync(UpdateProdutoDto updateProdutoDto);
     Task InativarAtivarAsync(Guid id, bool ativo);
+    Task<IList<OrdemExibicaoModel>> GetProdutosParaOrdemExibicaoAsync();
+    Task AtualizarOrdemExibicaoAsync(OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto);
 }

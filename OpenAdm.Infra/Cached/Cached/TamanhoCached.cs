@@ -58,6 +58,9 @@ public class TamanhoCached : ITamanhoRepository
         return tamanho;
     }
 
+    public Task<Tamanho?> GetTamanhoParaAtualizarOrdemAsync(Guid id)
+        => _tamanhoRepository.GetTamanhoParaAtualizarOrdemAsync(id);
+
     public async Task<IList<Tamanho>> GetTamanhosByIdsAsync(IList<Guid> ids)
     {
         return await _tamanhoRepository.GetTamanhosByIdsAsync(ids);
@@ -97,6 +100,10 @@ public class TamanhoCached : ITamanhoRepository
 
     public Task<IDictionary<Guid, Tamanho>> GetDictionaryTamanhosAsync(IList<Guid> ids)
         => _tamanhoRepository.GetDictionaryTamanhosAsync(ids);
+
+    public Task<IList<OrdemExibicaoModel>> GetTamanhosParaOrdemExibicaoAsync()
+        => _tamanhoRepository.GetTamanhosParaOrdemExibicaoAsync();
+
 
     public Task<IList<Tamanho>> PaginacaoDropDownAsync(PaginacaoDropDown<Tamanho> paginacaoDropDown)
         => _tamanhoRepository.PaginacaoDropDownAsync(paginacaoDropDown);

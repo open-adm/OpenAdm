@@ -72,6 +72,9 @@ public class CategoriaCached(CategoriaRepository categoriaRepository,
         return categoria;
     }
 
+    public Task<Categoria?> GetCategoriaParaAtualizarOrdemAsync(Guid id)
+        => _categoriaRepository.GetCategoriaParaAtualizarOrdemAsync(id);
+
     public Task<PaginacaoViewModel<Categoria>> PaginacaoAsync(FilterModel<Categoria> filterModel)
         => _categoriaRepository.PaginacaoAsync(filterModel);
 
@@ -83,6 +86,10 @@ public class CategoriaCached(CategoriaRepository categoriaRepository,
 
     public Task<IList<Categoria>> GetCategoriasDropDownAsync()
         => _categoriaRepository.GetCategoriasDropDownAsync();
+
+    public Task<IList<OrdemExibicaoModel>> GetCategoriasParaOrdemExibicaoAsync()
+        => _categoriaRepository.GetCategoriasParaOrdemExibicaoAsync();
+
 
     public Task<Categoria> AdicionarAsync(Categoria entity)
         => _categoriaRepository.AdicionarAsync(entity);

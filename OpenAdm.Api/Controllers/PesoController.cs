@@ -40,6 +40,28 @@ public class PesoController : ControllerBase
         return Ok(pesosViewModel);
     }
 
+    [HttpGet("ordem-exibicao")]
+    [Autentica]
+    [IsFuncionario]
+    [ProducesResponseType<IList<OrdemExibicaoModel>>(200)]
+    [ProducesResponseType<ErrorResponse>(400)]
+    public async Task<IActionResult> ListarParaOrdemExibicao()
+    {
+        return Ok(await _pesoService.GetPesosParaOrdemExibicaoAsync());
+    }
+
+    [HttpPut("ordem-exibicao")]
+    [Autentica]
+    [IsFuncionario]
+    [ProducesResponseType(200)]
+    [ProducesResponseType<ErrorResponse>(400)]
+    public async Task<IActionResult> AtualizarOrdemExibicao(
+        OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
+    {
+        await _pesoService.AtualizarOrdemExibicaoAsync(dto);
+        return Ok();
+    }
+
     [Autentica]
     [IsFuncionario]
     [HttpGet("dropdown")]

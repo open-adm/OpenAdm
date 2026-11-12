@@ -42,6 +42,28 @@ public class ProdutoController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("ordem-exibicao")]
+    [Autentica]
+    [IsFuncionario]
+    [ProducesResponseType<IList<OrdemExibicaoModel>>(200)]
+    [ProducesResponseType<ErrorResponse>(400)]
+    public async Task<IActionResult> ListarParaOrdemExibicao()
+    {
+        return Ok(await _produtoService.GetProdutosParaOrdemExibicaoAsync());
+    }
+
+    [HttpPut("ordem-exibicao")]
+    [Autentica]
+    [IsFuncionario]
+    [ProducesResponseType(200)]
+    [ProducesResponseType<ErrorResponse>(400)]
+    public async Task<IActionResult> AtualizarOrdemExibicao(
+        OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
+    {
+        await _produtoService.AtualizarOrdemExibicaoAsync(dto);
+        return Ok();
+    }
+
     [HttpPost("paginacao")]
     [Autentica]
     [IsFuncionario]

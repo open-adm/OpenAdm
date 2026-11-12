@@ -98,6 +98,10 @@ public class PesoCached : IPesoRepository
     public Task<IDictionary<Guid, Peso>> GetDictionaryPesosByIdsAsync(IList<Guid> ids)
         => _pesoRepository.GetDictionaryPesosByIdsAsync(ids);
 
+    public Task<IList<OrdemExibicaoModel>> GetPesosParaOrdemExibicaoAsync()
+        => _pesoRepository.GetPesosParaOrdemExibicaoAsync();
+
+
     public Task<IList<Peso>> PaginacaoDropDownAsync(PaginacaoDropDown<Peso> paginacaoDropDown)
         => _pesoRepository.PaginacaoDropDownAsync(paginacaoDropDown);
 

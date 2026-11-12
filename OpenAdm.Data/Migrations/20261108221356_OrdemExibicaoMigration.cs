@@ -37,6 +37,11 @@ namespace OpenAdm.Data.Migrations
                 type: "integer",
                 nullable: false,
                 defaultValue: 0);
+
+            migrationBuilder.Sql("UPDATE \"Tamanhos\" SET \"OrdemExibixao\" = \"Numero\"");
+            migrationBuilder.Sql("UPDATE \"Produtos\" SET \"OrdemExibixao\" = \"Numero\"");
+            migrationBuilder.Sql("UPDATE \"Pesos\" SET \"OrdemExibixao\" = \"Numero\"");
+            migrationBuilder.Sql("UPDATE \"Categorias\" SET \"OrdemExibixao\" = \"Numero\"");
         }
 
         /// <inheritdoc />

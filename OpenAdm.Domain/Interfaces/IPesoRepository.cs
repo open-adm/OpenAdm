@@ -13,4 +13,5 @@ public interface IPesoRepository : IGenericRepository<Peso>
     Task<Peso?> GetPesoByIdAsNoTrackingAsync(Guid id);
     Task<IDictionary<Guid, string>> GetDescricaoPesosAsync(IList<Guid> ids);
     Task<IDictionary<Guid, Peso>> GetDictionaryPesosByIdsAsync(IList<Guid> ids);
+    Task<IList<OrdemExibicaoModel>> GetPesosParaOrdemExibicaoAsync();
 }

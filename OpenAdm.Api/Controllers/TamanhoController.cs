@@ -27,6 +27,28 @@ public class TamanhoController : ControllerBase
         return Ok(tamanhosViewModel);
     }
 
+    [HttpGet("ordem-exibicao")]
+    [Autentica]
+    [IsFuncionario]
+    [ProducesResponseType<IList<OrdemExibicaoModel>>(200)]
+    [ProducesResponseType<OpenAdm.Application.Dtos.Response.ErrorResponse>(400)]
+    public async Task<IActionResult> ListarParaOrdemExibicao()
+    {
+        return Ok(await _tamanhoService.GetTamanhosParaOrdemExibicaoAsync());
+    }
+
+    [HttpPut("ordem-exibicao")]
+    [Autentica]
+    [IsFuncionario]
+    [ProducesResponseType(200)]
+    [ProducesResponseType<OpenAdm.Application.Dtos.Response.ErrorResponse>(400)]
+    public async Task<IActionResult> AtualizarOrdemExibicao(
+        OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
+    {
+        await _tamanhoService.AtualizarOrdemExibicaoAsync(dto);
+        return Ok();
+    }
+
     [Autentica]
     [IsFuncionario]
     [HttpGet("dropdown")]

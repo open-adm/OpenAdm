@@ -55,6 +55,13 @@ public class TamanhoRepository : GenericRepository<Tamanho>, ITamanhoRepository
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
+    public Task<Tamanho?> GetTamanhoParaAtualizarOrdemAsync(Guid id)
+    {
+        return ParceiroContext
+            .Tamanhos
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
     public async Task<IList<Tamanho>> GetTamanhosAsync()
     {
         return await ParceiroContext
@@ -62,6 +69,22 @@ public class TamanhoRepository : GenericRepository<Tamanho>, ITamanhoRepository
             .AsNoTracking()
             .OrderBy(x => x.OrdemExibixao)
             .ThenBy(x => x.Numero)
+            .ToListAsync();
+    }
+
+    public async Task<IList<OrdemExibicaoModel>> GetTamanhosParaOrdemExibicaoAsync()
+    {
+        return await ParceiroContext
+            .Tamanhos
+            .AsNoTracking()
+            .OrderBy(x => x.OrdemExibixao)
+            .ThenBy(x => x.Numero)
+            .Select(x => new OrdemExibicaoModel
+            {
+                Id = x.Id,
+                Descricao = x.Descricao,
+                OrdemExibicao = x.OrdemExibixao
+            })
             .ToListAsync();
     }
 

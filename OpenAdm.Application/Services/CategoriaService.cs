@@ -35,6 +35,8 @@ public class CategoriaService : ICategoriaService
         var categoria = EntityMapper.ToCategoriaCreate(categoriaCreateDto, nomeFoto);
 
         await _categoriaRepository.AddAsync(categoria);
+        categoria.AlterarOrdemExibicao(checked((int)categoria.Numero));
+        await _categoriaRepository.UpdateAsync(categoria);
 
         return new CategoriaViewModel().ToModel(categoria);
     }
@@ -63,11 +65,26 @@ public class CategoriaService : ICategoriaService
         return new CategoriaViewModel().ToModel(categoria);
     }
 
-    public async Task<IList<CategoriaViewModel>> GetCategoriasAsync()
-    {
-        var categorias = await _categoriaRepository.GetCategoriasAsync();
+    public Task<IList<OrdemExibicaoModel>> GetCategoriasParaOrdemExibicaoAsync()
+        => _categoriaRepository.GetCategoriasParaOrdemExibicaoAsync();
 
-        return categorias.Select(x => new CategoriaViewModel().ToModel(x)).ToList();
+    public async Task AtualizarOrdemExibicaoAsync(
+        OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
+    {
+        var erro = dto.Validar();
+        if (erro is not null)
+            throw new ExceptionApi(erro);
+
+        var origem = await _categoriaRepository.GetCategoriaParaAtualizarOrdemAsync(dto.IdOrigem)
+            ?? throw new ExceptionApi("Não foi possível localizar a categoria de origem");
+        var destino = await _categoriaRepository.GetCategoriaParaAtualizarOrdemAsync(dto.IdDestino)
+            ?? throw new ExceptionApi("Não foi possível localizar a categoria de destino");
+
+        origem.AlterarOrdemExibicao(dto.PosicaoDestino);
+        destino.AlterarOrdemExibicao(dto.PosicaoOrigem);
+        _categoriaRepository.Update(origem);
+        _categoriaRepository.Update(destino);
+        await _categoriaRepository.SaveChangesAsync();
     }
 
     public async Task<PaginacaoViewModel<CategoriaViewModel>> GetPaginacaoAsync(FilterModel<Categoria> paginacaoCategoriaDto)

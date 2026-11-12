@@ -73,6 +73,22 @@ public class PesoRepository : GenericRepository<Peso>, IPesoRepository
             .ToListAsync();
     }
 
+    public async Task<IList<OrdemExibicaoModel>> GetPesosParaOrdemExibicaoAsync()
+    {
+        return await ParceiroContext
+            .Pesos
+            .AsNoTracking()
+            .OrderBy(x => x.OrdemExibixao)
+            .ThenBy(x => x.Numero)
+            .Select(x => new OrdemExibicaoModel
+            {
+                Id = x.Id,
+                Descricao = x.Descricao,
+                OrdemExibicao = x.OrdemExibixao
+            })
+            .ToListAsync();
+    }
+
     public async Task<IList<Peso>> GetPesosByIdsAsync(IList<Guid> ids)
     {
         return await ParceiroContext

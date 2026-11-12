@@ -48,4 +48,9 @@ public sealed class Peso : BaseEntity
     {
         Ativo = ativo;
     }
+
+    public void AlterarOrdemExibicao(int ordemExibicao)
+    {
+        OrdemExibixao = ordemExibicao;
+    }
 }

@@ -50,6 +50,11 @@ public sealed class Produto : BaseEntity
     {
         Ativo = ativo;
     }
+
+    public void AlterarOrdemExibicao(int ordemExibicao)
+    {
+        OrdemExibixao = ordemExibicao;
+    }
     
     public bool ExigeEstoqueDisponivel(bool global)
     {

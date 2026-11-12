@@ -17,4 +17,6 @@ public interface IPesoService
     Task<PaginacaoViewModel<PesoViewModel>> GetPaginacaoAsync(FilterModel<Peso> paginacaoPesoDto);
     Task<IList<PesoViewModel>> GetPesosViewModelAsync();
     Task<IDictionary<Guid, PesoViewModel>> GetPesosByPesosIdsViewModelAsync(IList<Guid> pesosIds);
+    Task<IList<OrdemExibicaoModel>> GetPesosParaOrdemExibicaoAsync();
+    Task AtualizarOrdemExibicaoAsync(OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto);
 }

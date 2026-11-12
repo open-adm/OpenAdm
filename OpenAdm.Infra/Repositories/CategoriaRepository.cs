@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OpenAdm.Data.Context;
 using OpenAdm.Domain.Interfaces;
+using OpenAdm.Domain.Model;
 
 namespace OpenAdm.Infra.Repositories;
 
@@ -13,6 +14,13 @@ public class CategoriaRepository(ParceiroContext parceiroContext)
         return await ParceiroContext
             .Categorias
             .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
+    public Task<Categoria?> GetCategoriaParaAtualizarOrdemAsync(Guid id)
+    {
+        return ParceiroContext
+            .Categorias
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
@@ -51,6 +59,23 @@ public class CategoriaRepository(ParceiroContext parceiroContext)
         }
 
         return categorias;
+    }
+
+    public async Task<IList<OrdemExibicaoModel>> GetCategoriasParaOrdemExibicaoAsync()
+    {
+        return await ParceiroContext
+            .Categorias
+            .AsNoTracking()
+            .OrderBy(x => x.OrdemExibixao)
+            .ThenBy(x => x.Numero)
+            .Select(x => new OrdemExibicaoModel
+            {
+                Id = x.Id,
+                Descricao = x.Descricao,
+                Foto = x.Foto,
+                OrdemExibicao = x.OrdemExibixao
+            })
+            .ToListAsync();
     }
 
     public async Task<IList<Categoria>> GetCategoriasDropDownAsync()

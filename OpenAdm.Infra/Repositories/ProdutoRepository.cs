@@ -267,6 +267,23 @@ public class ProdutoRepository(ParceiroContext parceiroContext)
             .ToListAsync();
     }
 
+    public async Task<IList<OrdemExibicaoModel>> GetProdutosParaOrdemExibicaoAsync()
+    {
+        return await ParceiroContext
+            .Produtos
+            .AsNoTracking()
+            .OrderBy(x => x.OrdemExibixao)
+            .ThenBy(x => x.Numero)
+            .Select(x => new OrdemExibicaoModel
+            {
+                Id = x.Id,
+                Descricao = x.Descricao,
+                Foto = x.UrlFoto,
+                OrdemExibicao = x.OrdemExibixao
+            })
+            .ToListAsync();
+    }
+
     public Task<string?> GetDescricaoProdutoAsync(Guid id)
     {
         return ParceiroContext

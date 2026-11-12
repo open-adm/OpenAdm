@@ -65,6 +65,10 @@ public class ProdutoService : IProdutoService
         await _produtoRepository.AdicionarAsync(produto);
         await _produtoRepository.SaveChangesAsync();
 
+        produto.AlterarOrdemExibicao(checked((int)produto.Numero));
+        _produtoRepository.Update(produto);
+        await _produtoRepository.SaveChangesAsync();
+
         return new ProdutoViewModel().ToModel(produto);
     }
 
@@ -95,6 +99,28 @@ public class ProdutoService : IProdutoService
         var produtos = await _produtoRepository.GetAllProdutosAsync();
 
         return produtos.Select(x => new ProdutoViewModel().ToModel(x)).ToList();
+    }
+
+    public Task<IList<OrdemExibicaoModel>> GetProdutosParaOrdemExibicaoAsync()
+        => _produtoRepository.GetProdutosParaOrdemExibicaoAsync();
+
+    public async Task AtualizarOrdemExibicaoAsync(
+        OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
+    {
+        var erro = dto.Validar();
+        if (erro is not null)
+            throw new ExceptionApi(erro);
+
+        var origem = await _produtoRepository.GetProdutoByIdParaEditarAsync(dto.IdOrigem)
+            ?? throw new ExceptionApi("Não foi possível localizar o produto de origem");
+        var destino = await _produtoRepository.GetProdutoByIdParaEditarAsync(dto.IdDestino)
+            ?? throw new ExceptionApi("Não foi possível localizar o produto de destino");
+
+        origem.AlterarOrdemExibicao(dto.PosicaoDestino);
+        destino.AlterarOrdemExibicao(dto.PosicaoOrigem);
+        _produtoRepository.Update(origem);
+        _produtoRepository.Update(destino);
+        await _produtoRepository.SaveChangesAsync();
     }
 
     public Task<IList<DropDownItemModel>> BuscarDropDownAsync(DropDownFiltro filtro)

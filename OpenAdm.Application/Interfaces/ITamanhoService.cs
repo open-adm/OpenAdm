@@ -16,4 +16,6 @@ public interface ITamanhoService
     Task<PaginacaoViewModel<TamanhoViewModel>> GetPaginacaoAsync(FilterModel<Tamanho> paginacaoTamanhoDto);
     Task<IList<TamanhoViewModel>> GetTamanhoViewModelsAsync();
     Task<IDictionary<Guid, TamanhoViewModel>> GetTamanhoPorIdsViewModelsAsync(IList<Guid> ids);
+    Task<IList<OrdemExibicaoModel>> GetTamanhosParaOrdemExibicaoAsync();
+    Task AtualizarOrdemExibicaoAsync(OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto);
 }

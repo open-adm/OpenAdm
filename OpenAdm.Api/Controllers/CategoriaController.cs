@@ -39,6 +39,28 @@ public class CategoriaController(ICategoriaService categoriaService)
         return Ok(paginacao);
     }
 
+    [HttpGet("ordem-exibicao")]
+    [IsFuncionario]
+    [Autentica]
+    [ProducesResponseType<IList<OrdemExibicaoModel>>(200)]
+    [ProducesResponseType<ErrorResponse>(400)]
+    public async Task<IActionResult> ListarParaOrdemExibicao()
+    {
+        return Ok(await _categoriaService.GetCategoriasParaOrdemExibicaoAsync());
+    }
+
+    [HttpPut("ordem-exibicao")]
+    [IsFuncionario]
+    [Autentica]
+    [ProducesResponseType(200)]
+    [ProducesResponseType<ErrorResponse>(400)]
+    public async Task<IActionResult> AtualizarOrdemExibicao(
+        OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
+    {
+        await _categoriaService.AtualizarOrdemExibicaoAsync(dto);
+        return Ok();
+    }
+
     [HttpGet("get-categoria")]
     [IsFuncionario]
     [Autentica]

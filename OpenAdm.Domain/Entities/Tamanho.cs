@@ -48,4 +48,9 @@ public sealed class Tamanho : BaseEntity
     {
         Ativo = ativo;
     }
+
+    public void AlterarOrdemExibicao(int ordemExibicao)
+    {
+        OrdemExibixao = ordemExibicao;
+    }
 }

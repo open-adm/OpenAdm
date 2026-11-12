@@ -25,6 +25,8 @@ public class TamanhoService : ITamanhoService
     {
         var tamanho = createTamanhoDto.ToEntity();
         await _tamanhoRepository.AddAsync(tamanho);
+        tamanho.AlterarOrdemExibicao(checked((int)tamanho.Numero));
+        await _tamanhoRepository.UpdateAsync(tamanho);
         return new TamanhoViewModel().ToModel(tamanho);
     }
 
@@ -76,6 +78,28 @@ public class TamanhoService : ITamanhoService
     {
         var tamanhos = await _tamanhoRepository.GetTamanhosAsync();
         return tamanhos.Select(x => new TamanhoViewModel().ToModel(x)).ToList();
+    }
+
+    public Task<IList<OrdemExibicaoModel>> GetTamanhosParaOrdemExibicaoAsync()
+        => _tamanhoRepository.GetTamanhosParaOrdemExibicaoAsync();
+
+    public async Task AtualizarOrdemExibicaoAsync(
+        OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
+    {
+        var erro = dto.Validar();
+        if (erro is not null)
+            throw new ExceptionApi(erro);
+
+        var origem = await _tamanhoRepository.GetTamanhoParaAtualizarOrdemAsync(dto.IdOrigem)
+            ?? throw new ExceptionApi("Não foi possível localizar o tamanho de origem");
+        var destino = await _tamanhoRepository.GetTamanhoParaAtualizarOrdemAsync(dto.IdDestino)
+            ?? throw new ExceptionApi("Não foi possível localizar o tamanho de destino");
+
+        origem.AlterarOrdemExibicao(dto.PosicaoDestino);
+        destino.AlterarOrdemExibicao(dto.PosicaoOrigem);
+        _tamanhoRepository.Update(origem);
+        _tamanhoRepository.Update(destino);
+        await _tamanhoRepository.SaveChangesAsync();
     }
 
     public async Task<TamanhoViewModel> UpdateTamanhoAsync(UpdateTamanhoDto updateTamanhoDto)

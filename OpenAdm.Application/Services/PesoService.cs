@@ -25,6 +25,8 @@ public class PesoService : IPesoService
     {
         var peso = createPesoDto.ToEntity();
         await _pesoRepository.AddAsync(peso);
+        peso.AlterarOrdemExibicao(checked((int)peso.Numero));
+        await _pesoRepository.UpdateAsync(peso);
         return new PesoViewModel().ToModel(peso);
     }
 
@@ -67,6 +69,28 @@ public class PesoService : IPesoService
         var pesos = await _pesoRepository.GetPesosAsync();
 
         return pesos.Select(x => new PesoViewModel().ToModel(x)).ToList();
+    }
+
+    public Task<IList<OrdemExibicaoModel>> GetPesosParaOrdemExibicaoAsync()
+        => _pesoRepository.GetPesosParaOrdemExibicaoAsync();
+
+    public async Task AtualizarOrdemExibicaoAsync(
+        OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
+    {
+        var erro = dto.Validar();
+        if (erro is not null)
+            throw new ExceptionApi(erro);
+
+        var origem = await _pesoRepository.GetPesoByIdAsync(dto.IdOrigem)
+            ?? throw new ExceptionApi("Não foi possível localizar o peso de origem");
+        var destino = await _pesoRepository.GetPesoByIdAsync(dto.IdDestino)
+            ?? throw new ExceptionApi("Não foi possível localizar o peso de destino");
+
+        origem.AlterarOrdemExibicao(dto.PosicaoDestino);
+        destino.AlterarOrdemExibicao(dto.PosicaoOrigem);
+        _pesoRepository.Update(origem);
+        _pesoRepository.Update(destino);
+        await _pesoRepository.SaveChangesAsync();
     }
 
     public async Task InativarAtivarAsync(Guid id, bool ativo)
