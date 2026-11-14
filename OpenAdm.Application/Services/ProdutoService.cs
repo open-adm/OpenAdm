@@ -62,12 +62,8 @@ public class ProdutoService : IProdutoService
 
         await _pesosProdutosRepository.AddRangeAsync(pesosProdutos);
         await _tamanhosProdutoRepository.AddRangeAsync(tamanhosProdutos);
-        await _produtoRepository.AdicionarAsync(produto);
-        await _produtoRepository.SaveChangesAsync();
-
-        produto.AlterarOrdemExibicao(checked((int)produto.Numero));
-        _produtoRepository.Update(produto);
-        await _produtoRepository.SaveChangesAsync();
+        produto.AlterarOrdemExibicao(await _produtoRepository.GetMaxOrdemExibicaoAsync() + 1);
+        await _produtoRepository.AddAsync(produto);
 
         return new ProdutoViewModel().ToModel(produto);
     }
@@ -104,8 +100,7 @@ public class ProdutoService : IProdutoService
     public Task<IList<OrdemExibicaoModel>> GetProdutosParaOrdemExibicaoAsync()
         => _produtoRepository.GetProdutosParaOrdemExibicaoAsync();
 
-    public async Task AtualizarOrdemExibicaoAsync(
-        OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
+    public async Task AtualizarOrdemExibicaoAsync(Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
     {
         var erro = dto.Validar();
         if (erro is not null)

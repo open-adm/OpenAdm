@@ -10,6 +10,9 @@ namespace OpenAdm.Infra.Repositories;
 
 public class PesoRepository : GenericRepository<Peso>, IPesoRepository
 {
+    public async Task<int> GetMaxOrdemExibicaoAsync()
+        => await ParceiroContext.Pesos.MaxAsync(x => (int?)x.OrdemExibixao) ?? 0;
+
     public PesoRepository(ParceiroContext parceiroContext) : base(parceiroContext)
     {
     }

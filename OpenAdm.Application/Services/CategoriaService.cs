@@ -34,9 +34,8 @@ public class CategoriaService : ICategoriaService
 
         var categoria = EntityMapper.ToCategoriaCreate(categoriaCreateDto, nomeFoto);
 
+        categoria.AlterarOrdemExibicao(await _categoriaRepository.GetMaxOrdemExibicaoAsync() + 1);
         await _categoriaRepository.AddAsync(categoria);
-        categoria.AlterarOrdemExibicao(checked((int)categoria.Numero));
-        await _categoriaRepository.UpdateAsync(categoria);
 
         return new CategoriaViewModel().ToModel(categoria);
     }
@@ -69,7 +68,7 @@ public class CategoriaService : ICategoriaService
         => _categoriaRepository.GetCategoriasParaOrdemExibicaoAsync();
 
     public async Task AtualizarOrdemExibicaoAsync(
-        OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
+        Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
     {
         var erro = dto.Validar();
         if (erro is not null)

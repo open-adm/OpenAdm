@@ -10,4 +10,5 @@ public interface ICategoriaRepository : IGenericRepository<Categoria>
     Task<Categoria?> GetCategoriaAsync(Guid id);
     Task<Categoria?> GetCategoriaParaAtualizarOrdemAsync(Guid id);
     Task<IList<OrdemExibicaoModel>> GetCategoriasParaOrdemExibicaoAsync();
+    Task<int> GetMaxOrdemExibicaoAsync();
 }

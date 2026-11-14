@@ -14,6 +14,9 @@ public class ProdutoRepository(ParceiroContext parceiroContext)
 {
     private const int _take = 6;
 
+    public async Task<int> GetMaxOrdemExibicaoAsync()
+        => await ParceiroContext.Produtos.MaxAsync(x => (int?)x.OrdemExibixao) ?? 0;
+
     public async Task<IList<DropDownItemModel>> BuscarDropDownAsync(DropDownFiltro filtro)
     {
         var search = filtro.Search?.Trim();

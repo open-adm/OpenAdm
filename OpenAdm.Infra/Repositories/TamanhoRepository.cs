@@ -10,6 +10,9 @@ namespace OpenAdm.Infra.Repositories;
 
 public class TamanhoRepository : GenericRepository<Tamanho>, ITamanhoRepository
 {
+    public async Task<int> GetMaxOrdemExibicaoAsync()
+        => await ParceiroContext.Tamanhos.MaxAsync(x => (int?)x.OrdemExibixao) ?? 0;
+
     public TamanhoRepository(ParceiroContext parceiroContext) : base(parceiroContext)
     {
     }

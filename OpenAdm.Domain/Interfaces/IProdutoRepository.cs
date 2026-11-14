@@ -18,4 +18,5 @@ public interface IProdutoRepository : IGenericRepository<Produto>
     Task<string?> GetDescricaoProdutoAsync(Guid id);
     Task<IDictionary<Guid, Produto>> GetDictionaryProdutosAsync(IList<Guid> ids);
     Task<IList<OrdemExibicaoModel>> GetProdutosParaOrdemExibicaoAsync();
+    Task<int> GetMaxOrdemExibicaoAsync();
 }

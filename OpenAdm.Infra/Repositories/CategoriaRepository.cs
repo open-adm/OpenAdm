@@ -9,6 +9,9 @@ namespace OpenAdm.Infra.Repositories;
 public class CategoriaRepository(ParceiroContext parceiroContext)
     : GenericRepository<Categoria>(parceiroContext), ICategoriaRepository
 {
+    public async Task<int> GetMaxOrdemExibicaoAsync()
+        => await ParceiroContext.Categorias.MaxAsync(x => (int?)x.OrdemExibixao) ?? 0;
+
     public async Task<Categoria?> GetCategoriaAsync(Guid id)
     {
         return await ParceiroContext

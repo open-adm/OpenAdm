@@ -46,10 +46,7 @@ public static class DependencyInjectRepositories
 
         services.AddScoped<IPedidoRepository, PedidoRepository>();
 
-        services.AddScoped<CategoriaRepository>();
-        services.AddScoped<ICategoriaRepository, CategoriaCached>();
-
-        //services.AddScoped<ProdutoRepository>();
+        services.AddScoped<ICategoriaRepository, CategoriaRepository>();
         services.AddScoped<IProdutoRepository, ProdutoRepository>();
 
         services.AddScoped<UsuarioRepository>();
@@ -59,10 +56,8 @@ public static class DependencyInjectRepositories
         services.AddScoped<ITabelaDePrecoRepository, TabelaDePrecoRepository>();
         services.AddScoped<ConfiguracaoDoSistemaRepository>();
         services.AddScoped<IConfiguracaoDoSistemaRepository, ConfiguracaoDoSistemaCached>();
-        services.AddScoped<PesoRepository>();
-        services.AddScoped<IPesoRepository, PesoCached>();
-        services.AddScoped<TamanhoRepository>();
-        services.AddScoped<ITamanhoRepository, TamanhoCached>();
+        services.AddScoped<IPesoRepository, PesoRepository>();
+        services.AddScoped<ITamanhoRepository, TamanhoRepository>();
         services.AddScoped<IPesosProdutosRepository, PesosProdutosRepository>();
         services.AddScoped<ITamanhosProdutoRepository, TamanhosProdutoRepository>();
         services.AddScoped<IItemTabelaDePrecoRepository, ItemTabelaDePrecoRepository>();

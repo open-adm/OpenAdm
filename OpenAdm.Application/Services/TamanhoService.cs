@@ -24,9 +24,8 @@ public class TamanhoService : ITamanhoService
     public async Task<TamanhoViewModel> CreateTamanhoAsync(CreateTamanhoDto createTamanhoDto)
     {
         var tamanho = createTamanhoDto.ToEntity();
+        tamanho.AlterarOrdemExibicao(await _tamanhoRepository.GetMaxOrdemExibicaoAsync() + 1);
         await _tamanhoRepository.AddAsync(tamanho);
-        tamanho.AlterarOrdemExibicao(checked((int)tamanho.Numero));
-        await _tamanhoRepository.UpdateAsync(tamanho);
         return new TamanhoViewModel().ToModel(tamanho);
     }
 

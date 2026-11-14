@@ -24,9 +24,8 @@ public class PesoService : IPesoService
     public async Task<PesoViewModel> CreatePesoAsync(CreatePesoDto createPesoDto)
     {
         var peso = createPesoDto.ToEntity();
+        peso.AlterarOrdemExibicao(await _pesoRepository.GetMaxOrdemExibicaoAsync() + 1);
         await _pesoRepository.AddAsync(peso);
-        peso.AlterarOrdemExibicao(checked((int)peso.Numero));
-        await _pesoRepository.UpdateAsync(peso);
         return new PesoViewModel().ToModel(peso);
     }
 
