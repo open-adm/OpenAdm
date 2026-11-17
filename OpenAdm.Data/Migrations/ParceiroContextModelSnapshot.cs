@@ -16,7 +16,7 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261114012230_KitMigration";
+    public override string LastMigrationId => "20261114214307_AjusteKitMigration";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -473,6 +473,10 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
                     .HasMaxLength(255)
                     .HasColumnType("character varying(255)");
 
+                b.Property<string>("NomeImagem")
+                    .HasMaxLength(500)
+                    .HasColumnType("character varying(500)");
+
                 var numero = b.Property<long>("Numero")
                     .ValueGeneratedOnAdd()
                     .HasColumnType("bigint");
@@ -486,6 +490,9 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
                     .HasColumnType("boolean");
 
                 b.HasKey("Id");
+
+                b.HasIndex("Nome")
+                    .IsUnique();
 
                 b.ToTable("Kits");
             });
@@ -560,9 +567,11 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
 
                 b.HasKey("Id");
 
-                b.HasIndex("KitId");
-
                 b.HasIndex("TabelaPrecoId");
+
+                b.HasIndex("KitId", "TabelaPrecoId")
+                    .IsUnique()
+                    .HasFilter("\"Ativo\" = true");
 
                 b.ToTable("KitsTabelasPreco");
             });

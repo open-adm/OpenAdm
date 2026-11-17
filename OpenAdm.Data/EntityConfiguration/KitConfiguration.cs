@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OpenAdm.Data.Constants;
+using OpenAdm.Domain.Constants;
 using OpenAdm.Domain.Entities;
 
 namespace OpenAdm.Data.EntityConfiguration;
@@ -27,6 +27,8 @@ public class KitConfiguration : IEntityTypeConfiguration<Kit>
             .HasMaxLength(KitMaxLength.Descricao);
         builder.Property(x => x.Imagem)
             .HasMaxLength(KitMaxLength.Imagem);
+        builder.Property(x => x.NomeImagem)
+            .HasMaxLength(KitMaxLength.Imagem);
         builder.Property(x => x.Ativo)
             .IsRequired()
             .HasDefaultValue(true);
@@ -34,6 +36,9 @@ public class KitConfiguration : IEntityTypeConfiguration<Kit>
             .IsRequired();
         builder.Property(x => x.VenderPessoaJuridica)
             .IsRequired();
+        
+        builder.HasIndex(x => x.Nome)
+            .IsUnique();
 
         builder.HasMany(x => x.Itens)
             .WithOne(x => x.Kit)

@@ -1,4 +1,4 @@
-namespace OpenAdm.Data.Constants;
+namespace OpenAdm.Domain.Constants;
 
 public static class KitMaxLength
 {
