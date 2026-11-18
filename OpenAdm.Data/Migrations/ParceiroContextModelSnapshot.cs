@@ -16,7 +16,7 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261114214307_AjusteKitMigration";
+    public override string LastMigrationId => "20261118231029_AjuteIndexNumeroMovimentoProdutoMigration";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -226,6 +226,8 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
                     .HasColumnType("uuid");
 
                 b.HasKey("Id");
+
+                b.HasIndex("Numero");
 
                 b.HasIndex("PesoId");
 
@@ -439,143 +441,6 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
                 b.ToTable("ItensTabelaDePreco");
             });
 
-        modelBuilder.Entity("OpenAdm.Domain.Entities.Kit", b =>
-            {
-                b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uuid");
-
-                b.Property<bool>("Ativo")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("boolean")
-                    .HasDefaultValue(true);
-
-                b.Property<DateTime>("DataDeAtualizacao")
-                    .ValueGeneratedOnAddOrUpdate()
-                    .HasColumnType("timestamp without time zone")
-                    .HasDefaultValueSql("now()");
-
-                b.Property<DateTime>("DataDeCriacao")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("timestamp without time zone")
-                    .HasDefaultValueSql("now()");
-
-                b.Property<string>("Descricao")
-                    .HasMaxLength(500)
-                    .HasColumnType("character varying(500)");
-
-                b.Property<string>("Imagem")
-                    .HasMaxLength(500)
-                    .HasColumnType("character varying(500)");
-
-                b.Property<string>("Nome")
-                    .IsRequired()
-                    .HasMaxLength(255)
-                    .HasColumnType("character varying(255)");
-
-                b.Property<string>("NomeImagem")
-                    .HasMaxLength(500)
-                    .HasColumnType("character varying(500)");
-
-                var numero = b.Property<long>("Numero")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("bigint");
-
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(numero);
-
-                b.Property<bool>("VenderPessoaFisica")
-                    .HasColumnType("boolean");
-
-                b.Property<bool>("VenderPessoaJuridica")
-                    .HasColumnType("boolean");
-
-                b.HasKey("Id");
-
-                b.HasIndex("Nome")
-                    .IsUnique();
-
-                b.ToTable("Kits");
-            });
-
-        modelBuilder.Entity("OpenAdm.Domain.Entities.KitItem", b =>
-            {
-                b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uuid");
-
-                b.Property<bool>("Ativo")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("boolean")
-                    .HasDefaultValue(true);
-
-                b.Property<Guid>("KitId")
-                    .HasColumnType("uuid");
-
-                b.Property<Guid?>("PesoId")
-                    .HasColumnType("uuid");
-
-                b.Property<Guid>("ProdutoId")
-                    .HasColumnType("uuid");
-
-                b.Property<int>("Quantidade")
-                    .HasColumnType("integer");
-
-                b.Property<Guid?>("TamanhoId")
-                    .HasColumnType("uuid");
-
-                b.HasKey("Id");
-
-                b.HasIndex("PesoId");
-
-                b.HasIndex("ProdutoId");
-
-                b.HasIndex("TamanhoId");
-
-                var index = b.HasIndex("KitId", "ProdutoId", "TamanhoId", "PesoId")
-                    .IsUnique()
-                    .HasFilter("\"Ativo\" = true");
-
-                NpgsqlIndexBuilderExtensions.AreNullsDistinct(index, false);
-
-                b.ToTable("KitsItens");
-            });
-
-        modelBuilder.Entity("OpenAdm.Domain.Entities.KitTabelaPreco", b =>
-            {
-                b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uuid");
-
-                b.Property<bool>("Ativo")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("boolean")
-                    .HasDefaultValue(true);
-
-                b.Property<Guid>("KitId")
-                    .HasColumnType("uuid");
-
-                b.Property<decimal?>("PrecoPessoaFisica")
-                    .HasPrecision(12, 2)
-                    .HasColumnType("numeric(12,2)");
-
-                b.Property<decimal?>("PrecoPessoaJuridica")
-                    .HasPrecision(12, 2)
-                    .HasColumnType("numeric(12,2)");
-
-                b.Property<Guid>("TabelaPrecoId")
-                    .HasColumnType("uuid");
-
-                b.HasKey("Id");
-
-                b.HasIndex("TabelaPrecoId");
-
-                b.HasIndex("KitId", "TabelaPrecoId")
-                    .IsUnique()
-                    .HasFilter("\"Ativo\" = true");
-
-                b.ToTable("KitsTabelasPreco");
-            });
-
         modelBuilder.Entity("OpenAdm.Domain.Entities.MovimentacaoDeProduto", b =>
             {
                 b.Property<Guid>("Id")
@@ -619,6 +484,8 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
                     .HasColumnType("integer");
 
                 b.HasKey("Id");
+
+                b.HasIndex("Numero");
 
                 b.HasIndex("PesoId");
 
@@ -793,6 +660,8 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
                     .HasColumnType("uuid");
 
                 b.HasKey("Id");
+
+                b.HasIndex("Numero");
 
                 b.HasIndex("RepresentanteId");
 
@@ -1455,58 +1324,6 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
                 b.Navigation("Tamanho");
             });
 
-        modelBuilder.Entity("OpenAdm.Domain.Entities.KitItem", b =>
-            {
-                b.HasOne("OpenAdm.Domain.Entities.Kit", "Kit")
-                    .WithMany("Itens")
-                    .HasForeignKey("KitId")
-                    .OnDelete(DeleteBehavior.NoAction)
-                    .IsRequired();
-
-                b.HasOne("OpenAdm.Domain.Entities.Peso", "Peso")
-                    .WithMany()
-                    .HasForeignKey("PesoId")
-                    .OnDelete(DeleteBehavior.NoAction);
-
-                b.HasOne("OpenAdm.Domain.Entities.Produto", "Produto")
-                    .WithMany()
-                    .HasForeignKey("ProdutoId")
-                    .OnDelete(DeleteBehavior.NoAction)
-                    .IsRequired();
-
-                b.HasOne("OpenAdm.Domain.Entities.Tamanho", "Tamanho")
-                    .WithMany()
-                    .HasForeignKey("TamanhoId")
-                    .OnDelete(DeleteBehavior.NoAction);
-
-                b.Navigation("Kit");
-
-                b.Navigation("Peso");
-
-                b.Navigation("Produto");
-
-                b.Navigation("Tamanho");
-            });
-
-        modelBuilder.Entity("OpenAdm.Domain.Entities.KitTabelaPreco", b =>
-            {
-                b.HasOne("OpenAdm.Domain.Entities.Kit", "Kit")
-                    .WithMany("Precos")
-                    .HasForeignKey("KitId")
-                    .OnDelete(DeleteBehavior.NoAction)
-                    .IsRequired();
-
-                b.HasOne("OpenAdm.Domain.Entities.TabelaDePreco", "TabelaPreco")
-                    .WithMany()
-                    .HasForeignKey("TabelaPrecoId")
-                    .OnDelete(DeleteBehavior.NoAction)
-                    .IsRequired();
-
-                b.Navigation("Kit");
-
-                b.Navigation("TabelaPreco");
-            });
-
         modelBuilder.Entity("OpenAdm.Domain.Entities.MovimentacaoDeProduto", b =>
             {
                 b.HasOne("OpenAdm.Domain.Entities.Peso", "Peso")
@@ -1656,13 +1473,6 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
                 b.Navigation("Historicos");
 
                 b.Navigation("Parcelas");
-            });
-
-        modelBuilder.Entity("OpenAdm.Domain.Entities.Kit", b =>
-            {
-                b.Navigation("Itens");
-
-                b.Navigation("Precos");
             });
 
         modelBuilder.Entity("OpenAdm.Domain.Entities.Parcela", b =>

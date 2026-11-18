@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using OpenAdm.Data.Context;
 using OpenAdm.Domain.Entities;
 using OpenAdm.Domain.Enuns;
@@ -123,6 +124,11 @@ public class PedidoRepository : IPedidoRepository
     }
 
     public Task<PaginacaoViewModel<Pedido>> PaginacaoAsync(FilterModel<Pedido> filterModel)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PaginacaoViewModel<TResult>> PaginacaoProjetadaAsync<TResult>(FilterModel<Pedido> filterModel, Expression<Func<Pedido, TResult>> select) where TResult : class
     {
         throw new NotImplementedException();
     }

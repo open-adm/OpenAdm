@@ -25,6 +25,7 @@ public class EstoqueConfiguration : IEntityTypeConfiguration<Estoque>
         builder.Property(x => x.ProdutoId)
             .IsRequired();
 
+        builder.HasIndex(x => x.Numero);
         builder.HasIndex(x => x.ProdutoId);
         builder.HasIndex(x => new { x.ProdutoId, x.PesoId, x.TamanhoId }).IsUnique();
     }

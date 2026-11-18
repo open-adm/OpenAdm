@@ -1,6 +1,5 @@
 ﻿using OpenAdm.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using OpenAdm.Domain.Model;
 using System.Linq.Expressions;
 using OpenAdm.Domain.Extensions;
 using OpenAdm.Domain.PaginateDto;
@@ -9,16 +8,6 @@ namespace OpenAdm.Infra.Paginacao;
 
 public class PaginacaoMovimentacaoDeProdutoDto : FilterModel<MovimentacaoDeProduto>
 {
-    public override IList<Expression<Func<MovimentacaoDeProduto, object>>>? IncludeCustomList()
-    {
-        return new List<Expression<Func<MovimentacaoDeProduto, object>>>()
-        {
-            { x => x.Produto },
-            { x => x.Peso! },
-            { x => x.Tamanho! },
-        };
-    }
-
     public override Expression<Func<MovimentacaoDeProduto, bool>>? GetWhereBySearch()
     {
         if (string.IsNullOrWhiteSpace(Search))

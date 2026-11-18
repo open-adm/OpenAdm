@@ -4,6 +4,7 @@ using OpenAdm.Infra.Repositories;
 using OpenAdm.Domain.Entities;
 using OpenAdm.Domain.Model;
 using OpenAdm.Domain.PaginateDto;
+using System.Linq.Expressions;
 
 namespace OpenAdm.Infra.Cached.Cached;
 
@@ -104,6 +105,11 @@ public class UsuarioCached : IUsuarioRepository
 
     public Task<PaginacaoViewModel<Usuario>> PaginacaoAsync(FilterModel<Usuario> filterModel)
         => _usuarioRepository.PaginacaoAsync(filterModel);
+
+    public Task<PaginacaoViewModel<TResult>> PaginacaoProjetadaAsync<TResult>(
+        FilterModel<Usuario> filterModel,
+        Expression<Func<Usuario, TResult>> select) where TResult : class
+        => _usuarioRepository.PaginacaoProjetadaAsync(filterModel, select);
 
     public Task<IList<Usuario>> PaginacaoDropDownAsync(PaginacaoDropDown<Usuario> paginacaoDropDown)
         => _usuarioRepository.PaginacaoDropDownAsync(paginacaoDropDown);

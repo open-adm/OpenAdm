@@ -41,9 +41,6 @@ public class ParceiroContext : DbContext
     public DbSet<EnderecoUsuario> EnderecoUsuario { get; set; }
     public DbSet<Representante> Representantes { get; set; }
     public DbSet<CobrancaPedidoEcommerce> CobrancasPedidosEcommerce { get; set; }
-    public DbSet<Kit> Kits { get; set; }
-    public DbSet<KitItem> KitsItens { get; set; }
-    public DbSet<KitTabelaPreco> KitsTabelasPreco { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -77,9 +74,6 @@ public class ParceiroContext : DbContext
         modelBuilder.ApplyConfiguration(new EnderecoUsuarioConfiguration());
         modelBuilder.ApplyConfiguration(new RepresentanteConfiguration());
         modelBuilder.ApplyConfiguration(new CobrancaPedidoEcommerceConfiguration());
-        modelBuilder.ApplyConfiguration(new KitConfiguration());
-        modelBuilder.ApplyConfiguration(new KitItemConfiguration());
-        modelBuilder.ApplyConfiguration(new KitTabelaPrecoConfiguration());
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

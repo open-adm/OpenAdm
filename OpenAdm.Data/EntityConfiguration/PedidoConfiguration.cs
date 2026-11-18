@@ -20,6 +20,7 @@ public class PedidoConfiguration : IEntityTypeConfiguration<Pedido>
         builder.Property(x => x.Numero)
             .ValueGeneratedOnAdd();
         builder.Ignore(x => x.ValorTotal);
+        builder.HasIndex(x => x.Numero);
         builder.HasIndex(x => x.StatusPedido);
         builder.HasIndex(x => x.RepresentanteId);
         builder.HasIndex(x => new { x.Excluido, x.StatusPedido });

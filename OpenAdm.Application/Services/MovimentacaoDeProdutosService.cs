@@ -170,26 +170,23 @@ public class MovimentacaoDeProdutosService : IMovimentacaoDeProdutosService
             totalTamanhos: totalTamanhos);
     }
 
-    public async Task<PaginacaoViewModel<MovimentacaoDeProdutoViewModel>>
+    public Task<PaginacaoViewModel<MovimentacaoDeProdutoViewModel>>
         GetPaginacaoAsync(FilterModel<MovimentacaoDeProduto> paginacaoMovimentacaoDeProdutoDto)
     {
-        var paginacao = await _movimentacaoDeProdutorepository
-            .PaginacaoAsync(paginacaoMovimentacaoDeProdutoDto);
-
-        return new PaginacaoViewModel<MovimentacaoDeProdutoViewModel>()
-        {
-            TotalPaginas = paginacao.TotalPaginas,
-            Values = paginacao
-                .Values
-                .Select(x =>
-                    new MovimentacaoDeProdutoViewModel()
-                        .ToModel(x,
-                            x.Produto?.Descricao ?? "",
-                            x.Peso?.Descricao ?? "",
-                            x.Tamanho?.Descricao ?? ""))
-                .ToList(),
-            TotalDeRegistros = paginacao.TotalDeRegistros
-        };
+        return _movimentacaoDeProdutorepository.PaginacaoProjetadaAsync(
+            paginacaoMovimentacaoDeProdutoDto,
+            x => new MovimentacaoDeProdutoViewModel
+            {
+                Id = x.Id,
+                DataDeCriacao = x.DataDeCriacao,
+                DataDeAtualizacao = x.DataDeAtualizacao,
+                Numero = x.Numero,
+                QuantidadeMovimentada = x.QuantidadeMovimentada,
+                TipoMovimentacaoDeProduto = x.TipoMovimentacaoDeProduto,
+                Produto = x.Produto.Descricao,
+                Peso = x.Peso!.Descricao,
+                Tamanho = x.Tamanho!.Descricao
+            });
     }
 
     public async Task MovimentarItensPedidoAsync(IList<ItemPedido> itens)

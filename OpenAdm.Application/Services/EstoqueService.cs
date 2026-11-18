@@ -39,9 +39,26 @@ public class EstoqueService : IEstoqueService
 
     public async Task<PaginacaoViewModel<EstoqueViewModel>> GetPaginacaoAsync(FilterModel<Estoque> paginacaoEstoqueDto)
     {
-        var paginacao = await _estoqueRepository.PaginacaoAsync(paginacaoEstoqueDto);
+        var paginacao = await _estoqueRepository.PaginacaoProjetadaAsync(
+            paginacaoEstoqueDto,
+            x => new EstoqueViewModel
+            {
+                Id = x.Id,
+                //Numero = x.Numero,
+                //DataDeCriacao = x.DataDeCriacao,
+                DataDeAtualizacao = x.DataDeAtualizacao,
+                Quantidade = x.Quantidade,
+                ProdutoId = x.ProdutoId,
+                PesoId = x.PesoId,
+                TamanhoId = x.TamanhoId,
+                Produto = x.Produto.Descricao,
+                //Categoria = x.Produto.Categoria.Descricao,
+                //Foto = x.Produto.UrlFoto,
+                Peso = x.Peso!.Descricao,
+                Tamanho = x.Tamanho!.Descricao
+            });
 
-        var estoques = paginacao.Values.Select(x => (EstoqueViewModel)x).ToList();
+        var estoques = paginacao.Values.ToList();
 
         var estoquesReservados = await _itensPedidoRepository
             .ObterEstoquesReservadosAsync(estoques.Select(x => x.ProdutoId).Distinct().ToList());
@@ -49,8 +66,7 @@ public class EstoqueService : IEstoqueService
         foreach (var estoque in estoques)
         {
             var estoqueReservado = estoquesReservados.FirstOrDefault(x => x.ProdutoId == estoque.ProdutoId &&
-                                                                          x.PesoId == estoque.PesoId &&
-                                                                          x.TamanhoId == estoque.TamanhoId);
+                                                                          x.PesoId == estoque.PesoId && x.TamanhoId == estoque.TamanhoId);
             if (estoqueReservado == null)
             {
                 continue;

@@ -91,6 +91,25 @@ public class GenericRepository<T>(ParceiroContext parceiroContext)
         };
     }
 
+    public async Task<PaginacaoViewModel<TResult>> PaginacaoProjetadaAsync<TResult>(
+        FilterModel<T> filterModel,
+        Expression<Func<T, TResult>> select) where TResult : class
+    {
+        var query = ParceiroContext.Set<T>()
+            .AsNoTracking()
+            .WhereIsNotNull(filterModel.GetWhereBySearch())
+            .WhereIsNotNull(filterModel.Where());
+
+        var (totalPaginas, totalDeRegistros, values) = await query.ProjetarEPaginarAsync(filterModel, select);
+
+        return new PaginacaoViewModel<TResult>
+        {
+            TotalDeRegistros = totalDeRegistros,
+            TotalPaginas = totalPaginas,
+            Values = values
+        };
+    }
+
     public async Task<IList<T>> PaginacaoDropDownAsync(PaginacaoDropDown<T> paginacaoDropDown)
     {
         return await ParceiroContext
