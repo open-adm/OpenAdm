@@ -27,6 +27,7 @@ public class ParceiroContext : DbContext
     public DbSet<PesoProduto> PesosProdutos { get; set; }
     public DbSet<TamanhoProduto> TamanhosProdutos { get; set; }
     public DbSet<Usuario> Usuarios { get; set; }
+    public DbSet<AvisoUsuario> AvisosUsuarios { get; set; }
     public DbSet<Pedido> Pedidos { get; set; }
     public DbSet<ItemPedido> ItensPedidos { get; set; }
     public DbSet<TabelaDePreco> TabelaDePreco { get; set; }
@@ -65,6 +66,7 @@ public class ParceiroContext : DbContext
         modelBuilder.ApplyConfiguration(new TamanhoConfiguration());
         modelBuilder.ApplyConfiguration(new TamanhosProdutosConfiguration());
         modelBuilder.ApplyConfiguration(new UsuarioConfiguration());
+        modelBuilder.ApplyConfiguration(new AvisoUsuarioConfiguration());
         modelBuilder.ApplyConfiguration(new PedidoConfiguration());
         modelBuilder.ApplyConfiguration(new ItensPedidoConfiguration());
         modelBuilder.ApplyConfiguration(new TabelaDePrecoConfiguration());

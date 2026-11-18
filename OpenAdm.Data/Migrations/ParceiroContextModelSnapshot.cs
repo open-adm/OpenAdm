@@ -16,7 +16,7 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261118231029_AjuteIndexNumeroMovimentoProdutoMigration";
+    public override string LastMigrationId => "20261118232409_AvisoUsuarioMigration";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -26,6 +26,38 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
             .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
         NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+        modelBuilder.Entity("OpenAdm.Domain.Entities.AvisoUsuario", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
+
+                b.Property<bool>("Ativo")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("boolean")
+                    .HasDefaultValue(true);
+
+                b.Property<DateTime>("DataDeCriacao")
+                    .HasColumnType("timestamp without time zone");
+
+                b.Property<DateTime?>("DataDeVisualizacao")
+                    .HasColumnType("timestamp without time zone");
+
+                b.Property<string>("Mensagem")
+                    .IsRequired()
+                    .HasMaxLength(2000)
+                    .HasColumnType("character varying(2000)");
+
+                b.Property<Guid>("UsuarioId")
+                    .HasColumnType("uuid");
+
+                b.HasKey("Id");
+
+                b.HasIndex("UsuarioId", "DataDeCriacao", "Id");
+
+                b.ToTable("AvisosUsuarios");
+            });
 
         modelBuilder.Entity("OpenAdm.Domain.Entities.Categoria", b =>
             {
@@ -1182,6 +1214,15 @@ partial class ParceiroContextModelSnapshot : ModelSnapshot
                     .IsUnique();
 
                 b.ToTable("Usuarios");
+            });
+
+        modelBuilder.Entity("OpenAdm.Domain.Entities.AvisoUsuario", b =>
+            {
+                b.HasOne("OpenAdm.Domain.Entities.Usuario", null)
+                    .WithMany()
+                    .HasForeignKey("UsuarioId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
             });
 
         modelBuilder.Entity("OpenAdm.Domain.Entities.EnderecoEntregaPedido", b =>

@@ -41,6 +41,7 @@ public static class DependencyInjectyApplication
         services.AddScoped<IProdutoService, ProdutoService>();
         services.AddScoped<ILoginUsuarioService, LoginUsuarioService>();
         services.AddScoped<IUsuarioService, UsuarioService>();
+        services.AddScoped<IAvisoUsuarioService, AvisoUsuarioService>();
         services.AddScoped<IItensPedidoService, ItensPedidoService>();
         services.AddScoped<IItensPedidoAdministracaoService, ItensPedidoAdministracaoService>();
         services.AddScoped<IEsqueceuSenhaService, EsqueceuSenhaService>();

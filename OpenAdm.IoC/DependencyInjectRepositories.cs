@@ -51,6 +51,7 @@ public static class DependencyInjectRepositories
 
         services.AddScoped<UsuarioRepository>();
         services.AddScoped<IUsuarioRepository, UsuarioCached>();
+        services.AddScoped<IAvisoUsuarioRepository, AvisoUsuarioRepository>();
 
         services.AddScoped<IItensPedidoRepository, ItensPedidoRepository>();
         services.AddScoped<ITabelaDePrecoRepository, TabelaDePrecoRepository>();
