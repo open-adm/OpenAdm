@@ -7,10 +7,10 @@ namespace OpenAdm.Application.Services;
 
 public class HomeSevice : IHomeSevice
 {
+    private static readonly TimeZoneInfo FusoBrasilia = TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo");
+
     private readonly IMovimentacaoDeProdutosService _movimentacaoDeProdutosService;
-    private readonly IPedidoRepository _pedidoRepository;
     private readonly IAcessoEcommerceService _acessoEcommerceService;
-    private readonly IUsuarioRepository _usuarioRepository;
     private readonly IHomeRepository _homeRepository;
     private readonly IUsuarioAutenticado _usuarioAutenticado;
     private readonly ICachedService<HomeAdmViewModel> _cache;
@@ -19,17 +19,13 @@ public class HomeSevice : IHomeSevice
 
     public HomeSevice(
         IMovimentacaoDeProdutosService movimentacaoDeProdutosService,
-        IPedidoRepository pedidoRepository,
         IAcessoEcommerceService acessoEcommerceService,
-        IUsuarioRepository usuarioRepository,
         IHomeRepository homeRepository, IUsuarioAutenticado usuarioAutenticado, ICachedService<HomeAdmViewModel> cache,
         ICobrancaPedidoEcommerceRepository cobrancaPedidoEcommerceRepository,
         IResumoMensalHomeService resumoMensalHomeService)
     {
         _movimentacaoDeProdutosService = movimentacaoDeProdutosService;
-        _pedidoRepository = pedidoRepository;
         _acessoEcommerceService = acessoEcommerceService;
-        _usuarioRepository = usuarioRepository;
         _homeRepository = homeRepository;
         _usuarioAutenticado = usuarioAutenticado;
         _cache = cache;
@@ -39,67 +35,40 @@ public class HomeSevice : IHomeSevice
 
     public async Task<HomeAdmViewModel> GetHomeAdmAsync()
     {
-        var key = $"home_{_usuarioAutenticado.ParceiroId}";
+        var agoraUtc = DateTime.UtcNow;
+        var hoje = TimeZoneInfo.ConvertTimeFromUtc(agoraUtc, FusoBrasilia).Date;
+        var key = $"home_{_usuarioAutenticado.ParceiroId}_{hoje:yyyyMMdd}";
 
         var cache = await _cache.GetItemAsync(key);
 
-        if (cache != null)
-        {
-            return cache;
-        }
+        // if (cache != null)
+        // {
+        //     return cache;
+        // }
 
         var movimentos = await _movimentacaoDeProdutosService.MovimentoDashBoardAsync();
         var pedidosStatus = await _homeRepository.ObterStatusPedidosAsync();
-        var totalPedidos = await _homeRepository.CountDePedidosAsync();
+        var totalPedidos = pedidosStatus.Sum(x => x.Quantidade);
+        foreach (var status in pedidosStatus)
+        {
+            status.Porcentagem = Math.Round((decimal)status.Quantidade * 100 / totalPedidos, 2);
+        }
+
         var quantidadeDeAcessoEcommerce = await _acessoEcommerceService.QuantidadeDeAcessoAsync();
-        var quantidadeDeUsuarioCpf = await _usuarioRepository.GetCountCpfAsync();
-        var quantidadeDeUsuarioCnpj = await _usuarioRepository.GetCountCnpjAsync();
+        var (quantidadeDeUsuarioCpf, quantidadeDeUsuarioCnpj) = await _homeRepository.ObterTotalUsuariosPorDocumentoAsync();
         var totalizadorProdutoEstoque = await _homeRepository.ObterTotalizadoProtudoEstoqueAsync();
-        var dataInicio = DateTime.Today.AddDays(-6);
-        var pedidosPorDia = await _homeRepository.ContatorPedido7DiasAsync(dataInicio);
+        var dataInicio = hoje.AddDays(-6);
+        var pedidosPorDia = await _homeRepository.ContatorPedido7DiasAsync(dataInicio, FusoBrasilia);
         var produtosMaisVendidos = await _homeRepository.ProdutosMaisVendidosAsync(false);
         var produtosMenosVendidos = await _homeRepository.ProdutosMaisVendidosAsync(true);
         var totaisParcelas = await _homeRepository
-            .ObterTotalParcelasPorVencimentoAsync(DateTime.UtcNow.Date);
+            .ObterTotalParcelasPorVencimentoAsync(agoraUtc.Date);
         var resumoMensal = await _resumoMensalHomeService.ObterAsync();
 
-        var totalCobrancaHoje =
-            await _cobrancaPedidoEcommerceRepository.TotalACobrarAposAsync(DateTime.UtcNow);
-
-        var totalCobrancaSemana =
-            await _cobrancaPedidoEcommerceRepository.TotalACobrarAposAsync(DateTime.UtcNow.AddDays(-7));
-
-        var totalCobranca = await _cobrancaPedidoEcommerceRepository.TotalACobrarAsync();
-        var quantidadeTotalCobranca =
-            await _cobrancaPedidoEcommerceRepository.QuantidadeACobrarAsync();
-        var cobrancasMaisAntigas = await _cobrancaPedidoEcommerceRepository
-            .CobrancasMaisAntigasAsync();
-
-        var pedidosCobrancasMaisAntigas =
-            await _pedidoRepository
-                .ListarAsync(cobrancasMaisAntigas.Select(x => x.PedidoId));
-
-        ICollection<ItemCobrancaHomeAdmViewModel> cobrancasMaisAntigasModel = [];
-
-        foreach (var cobranca in cobrancasMaisAntigas)
-        {
-            var pedido = pedidosCobrancasMaisAntigas
-                .FirstOrDefault(x => x.PedidoId == cobranca.PedidoId);
-
-            if (pedido == null)
-            {
-                continue;
-            }
-
-            cobrancasMaisAntigasModel.Add(new()
-            {
-                PedidoId = pedido.PedidoId,
-                Cliente = pedido.Cliente,
-                NumeroPedido = pedido.NumeroPedido,
-                Valor = cobranca.Total,
-                Data = cobranca.DataDeCriacao
-            });
-        }
+        var inicioHojeUtc = TimeZoneInfo.ConvertTimeToUtc(hoje, FusoBrasilia);
+        var totaisCobranca = await _cobrancaPedidoEcommerceRepository.ObterTotaisAsync(
+            inicioHojeUtc, agoraUtc.AddDays(-7));
+        var cobrancasMaisAntigas = await _cobrancaPedidoEcommerceRepository.CobrancasMaisAntigasAsync();
 
         cache = new HomeAdmViewModel()
         {
@@ -113,11 +82,18 @@ public class HomeSevice : IHomeSevice
             },
             Cobranca = new()
             {
-                TotalHoje = totalCobrancaHoje,
-                TotalSemana = totalCobrancaSemana,
-                QuantidadeACobrar = quantidadeTotalCobranca,
-                TotalCobranca = totalCobranca,
-                CobrancasMaisAntigas = cobrancasMaisAntigasModel
+                TotalHoje = totaisCobranca.Hoje,
+                TotalSemana = totaisCobranca.Semana,
+                QuantidadeACobrar = totaisCobranca.Quantidade,
+                TotalCobranca = totaisCobranca.Total,
+                CobrancasMaisAntigas = cobrancasMaisAntigas.Select(x => new ItemCobrancaHomeAdmViewModel
+                {
+                    PedidoId = x.PedidoId,
+                    Cliente = x.Cliente,
+                    NumeroPedido = x.NumeroPedido,
+                    Valor = x.Valor,
+                    Data = x.Data
+                }).ToList()
             },
             PedidosPorDia = MontarCountDiario(pedidosPorDia, dataInicio),
             Movimentos = movimentos,
@@ -126,12 +102,7 @@ public class HomeSevice : IHomeSevice
             ProdutosMenosVendidos = produtosMenosVendidos,
             TotalProdutoEstoque = totalizadorProdutoEstoque?.Quantidade ?? 0,
             TotalProdutoEstoqueReservado = totalizadorProdutoEstoque?.QuantidadeReservada ?? 0,
-            StatusPedido = pedidosStatus.Select(x => new StatusPedidoHomeModel()
-            {
-                Status = x.Status,
-                Quantidade = x.Quantidade,
-                Porcentagem = Math.Round((decimal)x.Quantidade * 100 / totalPedidos, 2),
-            }),
+            StatusPedido = pedidosStatus,
             QuantidadeDeAcessoEcommerce = quantidadeDeAcessoEcommerce,
             QuantidadeDeUsuarioCnpj = quantidadeDeUsuarioCnpj,
             QuantidadeDeUsuarioCpf = quantidadeDeUsuarioCpf,

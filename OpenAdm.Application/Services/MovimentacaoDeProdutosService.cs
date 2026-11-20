@@ -209,56 +209,23 @@ public class MovimentacaoDeProdutosService : IMovimentacaoDeProdutosService
 
     public async Task<IList<MovimentoDeProdutoDashBoardModel>> MovimentoDashBoardAsync()
     {
-        var dataInicio = DateTime.UtcNow.AddMonths(-3);
-        var novaDataInicio = new DateTime(dataInicio.Year, dataInicio.Month, 1);
-        var dataFinal = DateTime.UtcNow;
+        var agora = DateTime.UtcNow;
+        var inicio = new DateTime(agora.Year, agora.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(-3);
+        var movimentos = await _movimentacaoDeProdutorepository.ObterSaidasPorMesECategoriaAsync(inicio, agora);
 
-        var movimentos = await _movimentacaoDeProdutorepository.CountTresMesesAsync(novaDataInicio, dataFinal);
-        var movimentosDash = new List<MovimentoDeProdutoDashBoardModel>();
-        var produtosIds = movimentos.Values.SelectMany(x => x.Select(y => y.ProdutoId)).DistinctBy(x => x).ToList();
-        var produtos = await _produtoRepository.GetDictionaryProdutosAsync(produtosIds);
-
-        foreach (var item in movimentos)
-        {
-            int anoDoMovimento = dataFinal.Year;
-
-            if (item.Key > dataFinal.Month)
+        return movimentos
+            .GroupBy(x => new { x.Ano, x.Mes })
+            .Select(g => new MovimentoDeProdutoDashBoardModel
             {
-                anoDoMovimento--;
-            }
-
-            var movimento = new MovimentoDeProdutoDashBoardModel()
-            {
-                Mes = item.Key.ConverterMesIntEmNome(),
-                Data = new DateTime(anoDoMovimento, item.Key, 1)
-            };
-
-            foreach (var movimentoProduto in item.Value)
-            {
-                if (!produtos.TryGetValue(movimentoProduto.ProdutoId, out var produto))
+                Data = new DateTime(g.Key.Ano, g.Key.Mes, 1),
+                Mes = g.Key.Mes.ConverterMesIntEmNome(),
+                Dados = g.Select(x => new DadosMovimentoDeProdutoDashBoardModel
                 {
-                    continue;
-                }
-
-                var dadoMovimentado = movimento.Dados.FirstOrDefault(x => x.Categoria == produto.Categoria.Descricao);
-
-                if (dadoMovimentado == null)
-                {
-                    movimento.Dados.Add(new DadosMovimentoDeProdutoDashBoardModel()
-                    {
-                        Categoria = produto.Categoria.Descricao,
-                        Quantidade = (int)movimentoProduto.QuantidadeMovimentada
-                    });
-
-                    continue;
-                }
-
-                dadoMovimentado.Quantidade += (int)movimentoProduto.QuantidadeMovimentada;
-            }
-
-            movimentosDash.Add(movimento);
-        }
-
-        return movimentosDash.OrderBy(x => x.Data).ToList();
+                    Categoria = x.Categoria,
+                    Quantidade = (int)x.Quantidade
+                }).ToList()
+            })
+            .OrderBy(x => x.Data)
+            .ToList();
     }
 }

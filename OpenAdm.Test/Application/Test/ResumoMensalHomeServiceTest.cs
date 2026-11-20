@@ -13,12 +13,11 @@ public class ResumoMensalHomeServiceTest
     {
         var categoriaAtual = Guid.NewGuid();
         var categoriaSomenteAnterior = Guid.NewGuid();
-        var anoAtual = DateTime.UtcNow.Year;
 
         _repository
-            .Setup(x => x.ObterAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .ReturnsAsync((DateTime inicio, DateTime _) => inicio.Year == anoAtual
-                ? new ResumoMensalPedidoModel
+            .Setup(x => x.ObterComparativoAsync(
+                It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), null))
+            .ReturnsAsync((new ResumoMensalPedidoModel
                 {
                     QuantidadePedidos = 12,
                     ValorTotalVendido = 900,
@@ -32,8 +31,7 @@ public class ResumoMensalHomeServiceTest
                             QuantidadeItensVendidos = 30
                         }
                     ]
-                }
-                : new ResumoMensalPedidoModel
+                }, new ResumoMensalPedidoModel
                 {
                     QuantidadePedidos = 8,
                     ValorTotalVendido = 1_000,
@@ -53,7 +51,7 @@ public class ResumoMensalHomeServiceTest
                             QuantidadeItensVendidos = 10
                         }
                     ]
-                });
+                }));
 
         var resultado = await new ResumoMensalHomeService(_repository.Object).ObterAsync();
 
@@ -79,13 +77,10 @@ public class ResumoMensalHomeServiceTest
     [Fact]
     public async Task ObterAsync_DeveTratarAnoAnteriorSemRegistros()
     {
-        var anoAtual = DateTime.UtcNow.Year;
         _repository
-            .Setup(x => x.ObterAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .ReturnsAsync((DateTime inicio, DateTime _) => new ResumoMensalPedidoModel
-            {
-                ValorTotalVendido = inicio.Year == anoAtual ? 250 : 0
-            });
+            .Setup(x => x.ObterComparativoAsync(
+                It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), null))
+            .ReturnsAsync((new ResumoMensalPedidoModel { ValorTotalVendido = 250 }, new ResumoMensalPedidoModel()));
 
         var resultado = await new ResumoMensalHomeService(_repository.Object).ObterAsync();
 
@@ -98,16 +93,15 @@ public class ResumoMensalHomeServiceTest
     {
         var representanteId = Guid.NewGuid();
         _repository
-            .Setup(x => x.ObterAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), representanteId))
-            .ReturnsAsync(new ResumoMensalPedidoModel());
+            .Setup(x => x.ObterComparativoAsync(
+                It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), representanteId))
+            .ReturnsAsync((new ResumoMensalPedidoModel(), new ResumoMensalPedidoModel()));
 
         await new ResumoMensalHomeService(_repository.Object).ObterAsync(representanteId);
 
         _repository.Verify(
-            x => x.ObterAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), representanteId),
-            Times.Exactly(2));
-        _repository.Verify(
-            x => x.ObterAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()),
-            Times.Never);
+            x => x.ObterComparativoAsync(
+                It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), representanteId),
+            Times.Once);
     }
 }

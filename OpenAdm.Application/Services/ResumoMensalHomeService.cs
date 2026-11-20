@@ -27,12 +27,8 @@ public sealed class ResumoMensalHomeService : IResumoMensalHomeService
         var inicioAnterior = inicioAtual.AddYears(-1);
         var fimAnterior = fimAtual.AddYears(-1);
 
-        var atual = representanteId.HasValue
-            ? await _repository.ObterAsync(inicioAtual, fimAtual, representanteId.Value)
-            : await _repository.ObterAsync(inicioAtual, fimAtual);
-        var anterior = representanteId.HasValue
-            ? await _repository.ObterAsync(inicioAnterior, fimAnterior, representanteId.Value)
-            : await _repository.ObterAsync(inicioAnterior, fimAnterior);
+        var (atual, anterior) = await _repository.ObterComparativoAsync(
+            inicioAtual, fimAtual, inicioAnterior, fimAnterior, representanteId);
         var categoriasAtuais = atual.Categorias.ToDictionary(x => x.CategoriaId);
         var categoriasAnteriores = anterior.Categorias.ToDictionary(x => x.CategoriaId);
 

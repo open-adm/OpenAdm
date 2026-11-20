@@ -4,6 +4,6 @@ namespace OpenAdm.Domain.Interfaces;
 
 public interface IResumoMensalPedidoRepository
 {
-    Task<ResumoMensalPedidoModel> ObterAsync(DateTime inicio, DateTime fim);
-    Task<ResumoMensalPedidoModel> ObterAsync(DateTime inicio, DateTime fim, Guid representanteId);
+    Task<(ResumoMensalPedidoModel Atual, ResumoMensalPedidoModel Anterior)> ObterComparativoAsync(
+        DateTime inicioAtual, DateTime fimAtual, DateTime inicioAnterior, DateTime fimAnterior, Guid? representanteId);
 }

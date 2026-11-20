@@ -58,46 +58,63 @@ public class HomeRepository : IHomeRepository
             .FirstOrDefaultAsync() ?? new TotalParcelasPorVencimentoHomeModel();
     }
 
-    public async Task<int> CountDePedidosAsync()
+    public async Task<(int Cpf, int Cnpj)> ObterTotalUsuariosPorDocumentoAsync()
     {
-        return await _parceiroContext
-            .Pedidos
-            .AsNoTracking()
-            .CountAsync();
+        var totais = await _parceiroContext.Usuarios
+            .Where(x => x.Ativo)
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                Cpf = g.Count(x => !string.IsNullOrWhiteSpace(x.Cpf)),
+                Cnpj = g.Count(x => !string.IsNullOrWhiteSpace(x.Cnpj))
+            })
+            .FirstOrDefaultAsync();
+
+        return (totais?.Cpf ?? 0, totais?.Cnpj ?? 0);
     }
 
     public async Task<ICollection<ProdutoMaisVendidoModel>> ProdutosMaisVendidosAsync(bool asc)
     {
-        var query =
-            _parceiroContext.ItensPedidos
-                .AsNoTracking()
-                .Where(x => x.Pedido.StatusPedido == StatusPedido.Entregue && !x.Pedido.Excluido)
-                .GroupBy(x => new
-                {
-                    x.ProdutoId,
-                    x.PesoId,
-                    x.TamanhoId,
-                    x.Produto.Descricao,
-                    x.Produto.UrlFoto,
-                    PesoDescricao = x.Peso!.Descricao,
-                    TamanhoDescricao = x.Tamanho!.Descricao
-                })
-                .Select(g => new ProdutoMaisVendidoModel
-                {
-                    Id = g.Key.ProdutoId,
-                    Descricao = g.Key.Descricao,
-                    Foto = g.Key.UrlFoto,
-                    Quantidade = g.Sum(x => x.Quantidade),
-                    ValorUnitario = g.Max(x => x.ValorUnitario),
-                    Peso = g.Key.PesoDescricao,
-                    Tamanho = g.Key.TamanhoDescricao
-                });
+        var totais = _parceiroContext.ItensPedidos
+            .Where(x => x.Pedido.StatusPedido == StatusPedido.Entregue)
+            .GroupBy(x => new { x.ProdutoId, x.PesoId, x.TamanhoId })
+            .Select(g => new
+            {
+                g.Key.ProdutoId,
+                g.Key.PesoId,
+                g.Key.TamanhoId,
+                Quantidade = g.Sum(x => x.Quantidade),
+                ValorUnitario = g.Max(x => x.ValorUnitario)
+            });
 
-        query = asc ? query.OrderBy(x => x.Quantidade) : query.OrderByDescending(x => x.Quantidade);
+        var ordenados = asc ? totais.OrderBy(x => x.Quantidade) : totais.OrderByDescending(x => x.Quantidade);
+        var primeiros = ordenados
+            .ThenBy(x => x.ProdutoId)
+            .ThenBy(x => x.PesoId)
+            .ThenBy(x => x.TamanhoId)
+            .Take(3);
 
-        return await query
-            .Take(3)
-            .ToListAsync();
+        var produtos = await (
+            from item in primeiros
+            join produto in _parceiroContext.Produtos on item.ProdutoId equals produto.Id
+            join peso in _parceiroContext.Pesos on item.PesoId equals (Guid?)peso.Id into pesos
+            from peso in pesos.DefaultIfEmpty()
+            join tamanho in _parceiroContext.Tamanhos on item.TamanhoId equals (Guid?)tamanho.Id into tamanhos
+            from tamanho in tamanhos.DefaultIfEmpty()
+            select new ProdutoMaisVendidoModel
+            {
+                Id = item.ProdutoId,
+                Descricao = produto.Descricao,
+                Foto = produto.UrlFoto,
+                Quantidade = item.Quantidade,
+                ValorUnitario = item.ValorUnitario,
+                Peso = peso == null ? null : peso.Descricao,
+                Tamanho = tamanho == null ? null : tamanho.Descricao
+            }).ToListAsync();
+
+        return asc
+            ? produtos.OrderBy(x => x.Quantidade).ToList()
+            : produtos.OrderByDescending(x => x.Quantidade).ToList();
     }
 
     public async Task<ICollection<ProdutoMaisVendidoModel>> ProdutosMenosVendidosAsync()
@@ -149,18 +166,28 @@ public class HomeRepository : IHomeRepository
         };
     }
 
-    public async Task<IList<ContadorPedidoModel>> ContatorPedido7DiasAsync(DateTime dataInicio)
+    public async Task<IList<ContadorPedidoModel>> ContatorPedido7DiasAsync(DateTime dataInicio, TimeZoneInfo fusoHorario)
     {
-        return await _parceiroContext
-            .Pedidos
-            .AsNoTracking()
-            .Where(p => p.DataDeCriacao >= dataInicio)
-            .GroupBy(p => p.DataDeCriacao.Date)
-            .Select(g => new ContadorPedidoModel()
-            {
-                Data = g.Key,
-                Total = g.Count()
-            })
+        var limites = Enumerable.Range(0, 8)
+            .Select(dia => TimeZoneInfo.ConvertTimeToUtc(dataInicio.AddDays(dia), fusoHorario))
+            .ToArray();
+
+        var totais = await _parceiroContext.Pedidos
+            .Where(x => x.DataDeCriacao >= limites[0] && x.DataDeCriacao < limites[7])
+            .GroupBy(x =>
+                x.DataDeCriacao < limites[1] ? 0 :
+                x.DataDeCriacao < limites[2] ? 1 :
+                x.DataDeCriacao < limites[3] ? 2 :
+                x.DataDeCriacao < limites[4] ? 3 :
+                x.DataDeCriacao < limites[5] ? 4 :
+                x.DataDeCriacao < limites[6] ? 5 : 6)
+            .Select(g => new { Dia = g.Key, Total = g.Count() })
             .ToListAsync();
+
+        return totais.Select(x => new ContadorPedidoModel
+        {
+            Data = dataInicio.AddDays(x.Dia),
+            Total = x.Total
+        }).ToList();
     }
 }

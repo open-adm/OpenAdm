@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OpenAdm.Domain.Interfaces;
 using OpenAdm.Data.Context;
+using OpenAdm.Domain.Model;
 
 namespace OpenAdm.Infra.Repositories;
 
@@ -16,16 +17,24 @@ public class MovimentacaoDeProdutoRepository : GenericRepository<MovimentacaoDeP
         await ParceiroContext.AddRangeAsync(movimentacaoDeProdutos);
     }
 
-    public async Task<IDictionary<int, List<MovimentacaoDeProduto>>> CountTresMesesAsync(DateTime dataInicio, DateTime dataFinal)
+    public Task<List<MovimentacaoMensalCategoriaModel>> ObterSaidasPorMesECategoriaAsync(
+        DateTime dataInicio, DateTime dataFinal)
     {
-        return await ParceiroContext
-            .MovimentacoesDeProdutos
-            .Where(m => m.DataDeCriacao >= dataInicio && m.DataDeCriacao <= dataFinal 
-                && m.TipoMovimentacaoDeProduto == Domain.Enuns.TipoMovimentacaoDeProduto.Saida)
-            .GroupBy(m => m.DataDeCriacao.Month)
-            .ToDictionaryAsync(
-                g => g.Key,
-                g => g.Select(x => x).ToList());
+        return ParceiroContext.MovimentacoesDeProdutos
+            .Where(x => x.DataDeCriacao >= dataInicio && x.DataDeCriacao <= dataFinal &&
+                        x.TipoMovimentacaoDeProduto == Domain.Enuns.TipoMovimentacaoDeProduto.Saida)
+            .GroupBy(x => new
+            {
+                Ano = x.DataDeCriacao.Year,
+                Mes = x.DataDeCriacao.Month,
+                Categoria = x.Produto.Categoria.Descricao
+            })
+            .Select(g => new MovimentacaoMensalCategoriaModel(
+                g.Key.Ano,
+                g.Key.Mes,
+                g.Key.Categoria,
+                g.Sum(x => Math.Truncate(x.QuantidadeMovimentada))))
+            .ToListAsync();
     }
 
     public async Task<IList<MovimentacaoDeProduto>> RelatorioAsync(

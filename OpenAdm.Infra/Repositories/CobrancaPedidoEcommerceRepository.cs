@@ -3,6 +3,7 @@ using OpenAdm.Data.Context;
 using OpenAdm.Domain.Entities.OpenAdm;
 using OpenAdm.Domain.Enuns;
 using OpenAdm.Domain.Interfaces;
+using OpenAdm.Domain.Model.Pedidos;
 
 namespace OpenAdm.Infra.Repositories;
 
@@ -33,46 +34,43 @@ public class CobrancaPedidoEcommerceRepository(ParceiroContext parceiroContext) 
                 .SetProperty(y => y.DataDeAtualizacao, DateTime.UtcNow));
     }
 
-    public async Task<decimal> TotalACobrarAposAsync(DateTime data)
+    public async Task<(decimal Hoje, decimal Semana, decimal Total, int Quantidade)> ObterTotaisAsync(
+        DateTime inicioHoje, DateTime inicioSemana)
     {
-        return await parceiroContext
-            .CobrancasPedidosEcommerce
-            .AsNoTracking()
-            .Where(x => x.Status == StatusCobrancaPedidoEcommerceEnum.ACobrar &&
-                        x.Ativo &&
-                        x.DataDeCriacao >= data)
-            .SumAsync(x => x.Total);
+        var totais = await CobrancasPendentes()
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                Hoje = g.Sum(x => x.DataDeCriacao >= inicioHoje ? x.Total : 0),
+                Semana = g.Sum(x => x.DataDeCriacao >= inicioSemana ? x.Total : 0),
+                Total = g.Sum(x => x.Total),
+                Quantidade = g.Count()
+            })
+            .FirstOrDefaultAsync();
+
+        return (totais?.Hoje ?? 0, totais?.Semana ?? 0, totais?.Total ?? 0, totais?.Quantidade ?? 0);
     }
 
-    public async Task<int> QuantidadeACobrarAsync()
+    public async Task<ICollection<ItemCobrancaHomeAdmModel>> CobrancasMaisAntigasAsync()
     {
-        return await parceiroContext
-            .CobrancasPedidosEcommerce
-            .AsNoTracking()
-            .Where(x => x.Status == StatusCobrancaPedidoEcommerceEnum.ACobrar &&
-                        x.Ativo)
-            .CountAsync();
-    }
-
-    public async Task<decimal> TotalACobrarAsync()
-    {
-        return await parceiroContext
-            .CobrancasPedidosEcommerce
-            .AsNoTracking()
-            .Where(x => x.Status == StatusCobrancaPedidoEcommerceEnum.ACobrar &&
-                        x.Ativo)
-            .SumAsync(x => x.Total);
-    }
-
-    public async Task<ICollection<CobrancaPedidoEcommerce>> CobrancasMaisAntigasAsync()
-    {
-        return await parceiroContext
-            .CobrancasPedidosEcommerce
-            .AsNoTracking()
-            .Where(x => x.Status == StatusCobrancaPedidoEcommerceEnum.ACobrar &&
-                        x.Ativo)
+        return await CobrancasPendentes()
             .OrderBy(x => x.DataDeCriacao)
+            .ThenBy(x => x.Id)
             .Take(3)
+            .Select(x => new ItemCobrancaHomeAdmModel
+            {
+                PedidoId = x.PedidoId,
+                NumeroPedido = x.Pedido.Numero,
+                Cliente = x.Pedido.Usuario.Nome,
+                Valor = x.Total,
+                Data = x.DataDeCriacao
+            })
             .ToListAsync();
+    }
+
+    private IQueryable<CobrancaPedidoEcommerce> CobrancasPendentes()
+    {
+        return parceiroContext.CobrancasPedidosEcommerce
+            .Where(x => x.Status == StatusCobrancaPedidoEcommerceEnum.ACobrar && x.Ativo);
     }
 }

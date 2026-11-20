@@ -10,8 +10,7 @@ public interface ICobrancaPedidoEcommerceRepository
     Task SaveChangesAsync();
     Task<CobrancaPedidoEcommerce?> GetByPedidoIdAsync(Guid pedidoId);
     Task AtualizarStatusAsync(Guid id, StatusCobrancaPedidoEcommerceEnum status);
-    Task<decimal> TotalACobrarAposAsync(DateTime data);
-    Task<int> QuantidadeACobrarAsync();
-    Task<decimal> TotalACobrarAsync();
-    Task<ICollection<CobrancaPedidoEcommerce>> CobrancasMaisAntigasAsync();
+    Task<(decimal Hoje, decimal Semana, decimal Total, int Quantidade)> ObterTotaisAsync(
+        DateTime inicioHoje, DateTime inicioSemana);
+    Task<ICollection<ItemCobrancaHomeAdmModel>> CobrancasMaisAntigasAsync();
 }
