@@ -14,7 +14,7 @@ OpenAdm is a multi-project .NET solution (`OpenAdm.sln`) organized by layer. `Op
 ## Coding Style & Naming Conventions
 Projects target `net11.0` with nullable reference types and implicit usings enabled. Use four-space indentation and standard C# conventions: PascalCase for classes, methods, properties, DTOs, and enums; camelCase for locals and parameters; interfaces prefixed with `I`. Prefer `DateTime.UtcNow` over `DateTime.Now` when recording application timestamps. Keep Portuguese domain names consistent with existing files, for example `PedidoService`, `ConfiguracaoDeFreteController`, and `PaginacaoPedidoDto`.
 
-Use `ResultPartner<T>` as the standard return type for new application service operations that can return expected business errors. Controllers should convert it with `ToActionResult()` and declare typed `ProducesResponseType` attributes for success and error responses in Swagger.
+Use `Resultado<T>` as the standard return type for new operations that can return expected errors, including application services and external API requests. For HTTP endpoints, convert it with `ToIResult()` and declare typed `ProducesResponseType` attributes for success and error responses in Swagger.
 
 For new DTO validation, inherit from `ValidarBaseDTO` and use the custom attributes in `OpenAdm.Application/Attributes`; do not use `System.ComponentModel.DataAnnotations`. Declare required fields through validation attributes, not through imperative checks in `Validar()`. Use `Validar()` overrides only for cross-field business rules, such as comparing an optional password and its confirmation; do not turn optional fields into required fields unless explicitly requested.
 
