@@ -22,6 +22,9 @@ public class CategoriaService : ICategoriaService
         _uploadImageBlobClient = uploadImageBlobClient;
     }
 
+    public Task<IList<DropDownItemModel>> BuscarDropDownAsync(DropDownFiltro filtro)
+        => _categoriaRepository.BuscarDropDownAsync(filtro);
+
     public async Task<CategoriaViewModel> CreateCategoriaAsync(CategoriaCreateDto categoriaCreateDto)
     {
         categoriaCreateDto.Validar();

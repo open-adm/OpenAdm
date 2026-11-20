@@ -60,20 +60,7 @@ public class EstoqueService : IEstoqueService
 
         var estoques = paginacao.Values.ToList();
 
-        var estoquesReservados = await _itensPedidoRepository
-            .ObterEstoquesReservadosAsync(estoques.Select(x => x.ProdutoId).Distinct().ToList());
-
-        foreach (var estoque in estoques)
-        {
-            var estoqueReservado = estoquesReservados.FirstOrDefault(x => x.ProdutoId == estoque.ProdutoId &&
-                                                                          x.PesoId == estoque.PesoId && x.TamanhoId == estoque.TamanhoId);
-            if (estoqueReservado == null)
-            {
-                continue;
-            }
-
-            estoque.QuantidadeReservada = estoqueReservado.QuantidadeReservada;
-        }
+        await PreencherQuantidadesReservadasAsync(estoques);
 
         return new PaginacaoViewModel<EstoqueViewModel>()
         {
@@ -174,17 +161,48 @@ public class EstoqueService : IEstoqueService
             tamanhos: posicaoDeEstoqueRelatorioDto.Tamanhos,
             categorias: posicaoDeEstoqueRelatorioDto.Categorias);
 
-        var estoquesViewModel = new List<EstoqueViewModel>();
+        var estoquesViewModel = estoques.Select(estoque => (EstoqueViewModel)estoque).ToList();
+        await PreencherQuantidadesReservadasAsync(estoquesViewModel);
 
-        foreach (var estoque in estoques)
+        IEnumerable<EstoqueViewModel> itens = estoquesViewModel;
+
+        if (posicaoDeEstoqueRelatorioDto.EstoqueReservadoMaiorQue.HasValue)
         {
-            estoquesViewModel.Add((EstoqueViewModel)estoque);
+            itens =
+                itens.Where(x => x.QuantidadeReservada > posicaoDeEstoqueRelatorioDto.EstoqueReservadoMaiorQue.Value);
+        }
+
+        if (posicaoDeEstoqueRelatorioDto.EstoqueDisponivelMenorOuIgualA.HasValue)
+        {
+            itens = itens.Where(x =>
+                x.QuantidadeDisponivel <= posicaoDeEstoqueRelatorioDto.EstoqueDisponivelMenorOuIgualA.Value);
         }
 
         return new PosicaoDeEstoqueRelatorioViewModel()
         {
-            Itens = estoquesViewModel
+            Itens = itens.ToList()
         };
+    }
+
+    private async Task PreencherQuantidadesReservadasAsync(IReadOnlyCollection<EstoqueViewModel> estoques)
+    {
+        if (estoques.Count == 0)
+        {
+            return;
+        }
+
+        var estoquesReservados = await _itensPedidoRepository
+            .ObterEstoquesReservadosAsync(estoques.Select(x => x.ProdutoId).Distinct().ToList());
+
+        var quantidadesReservadas = estoquesReservados.ToDictionary(
+            x => (x.ProdutoId, x.PesoId, x.TamanhoId),
+            x => x.QuantidadeReservada);
+
+        foreach (var estoque in estoques)
+        {
+            estoque.QuantidadeReservada = quantidadesReservadas.GetValueOrDefault(
+                (estoque.ProdutoId, estoque.PesoId, estoque.TamanhoId));
+        }
     }
 
     public async Task<bool> MovimentacaoDeProdutoAsync(

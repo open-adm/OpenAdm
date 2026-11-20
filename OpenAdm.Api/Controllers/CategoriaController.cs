@@ -5,6 +5,7 @@ using OpenAdm.Application.Dtos.Response;
 using OpenAdm.Application.Interfaces;
 using OpenAdm.Application.Models.Categorias;
 using OpenAdm.Domain.Model;
+using OpenAdm.Domain.PaginateDto;
 using OpenAdm.Infra.Paginacao;
 
 namespace OpenAdm.Api.Controllers;
@@ -39,6 +40,17 @@ public class CategoriaController(ICategoriaService categoriaService)
         return Ok(paginacao);
     }
 
+    [HttpGet("dropdown")]
+    [Autentica]
+    [IsFuncionario]
+    [ProducesResponseType<IList<DropDownItemModel>>(200)]
+    [ProducesResponseType<ErrorResponse>(400)]
+    public async Task<IActionResult> DropDown([FromQuery] string? search = null)
+    {
+        var filtro = new DropDownFiltro { Search = search };
+        return Ok(await _categoriaService.BuscarDropDownAsync(filtro));
+    }
+
     [HttpGet("ordem-exibicao")]
     [IsFuncionario]
     [Autentica]
@@ -55,7 +67,7 @@ public class CategoriaController(ICategoriaService categoriaService)
     [ProducesResponseType(200)]
     [ProducesResponseType<ErrorResponse>(400)]
     public async Task<IActionResult> AtualizarOrdemExibicao(
-        OpenAdm.Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
+        Application.Dtos.OrdemExibicao.AtualizarOrdemExibicaoDto dto)
     {
         await _categoriaService.AtualizarOrdemExibicaoAsync(dto);
         return Ok();

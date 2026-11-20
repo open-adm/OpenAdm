@@ -8,6 +8,7 @@ namespace OpenAdm.Application.Interfaces;
 
 public interface ICategoriaService
 {
+    Task<IList<DropDownItemModel>> BuscarDropDownAsync(DropDownFiltro filtro);
     Task<CategoriaViewModel> GetCategoriaAsync(Guid id);
     Task DeleteCategoriaAsync(Guid id);
     Task InativarAtivarEcommerceAsync(Guid id);

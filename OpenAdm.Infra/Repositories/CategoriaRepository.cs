@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using OpenAdm.Data.Context;
 using OpenAdm.Domain.Interfaces;
 using OpenAdm.Domain.Model;
+using OpenAdm.Domain.PaginateDto;
+using System.Linq.Expressions;
 
 namespace OpenAdm.Infra.Repositories;
 
@@ -81,11 +83,18 @@ public class CategoriaRepository(ParceiroContext parceiroContext)
             .ToListAsync();
     }
 
-    public async Task<IList<Categoria>> GetCategoriasDropDownAsync()
+    public Task<IList<DropDownItemModel>> BuscarDropDownAsync(DropDownFiltro filtro)
     {
-        return await ParceiroContext
-            .Categorias
-            .AsNoTracking()
-            .ToListAsync();
+        var search = filtro.Search?.Trim();
+        Expression<Func<Categoria, bool>>? where = string.IsNullOrWhiteSpace(search)
+            ? null
+            : x => EF.Functions.ILike(EF.Functions.Unaccent(x.Descricao), $"%{search}%");
+
+        return BuscarDropDownAsync(
+            filtro,
+            where,
+            x => x.Descricao,
+            x => x.Id,
+            x => new DropDownItemModel { Id = x.Id, Descricao = x.Descricao });
     }
 }

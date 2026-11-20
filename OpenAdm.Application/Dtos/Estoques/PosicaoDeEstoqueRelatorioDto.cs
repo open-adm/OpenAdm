@@ -6,4 +6,6 @@ public class PosicaoDeEstoqueRelatorioDto
     public ICollection<Guid>? Tamanhos { get; set; }
     public ICollection<Guid>? Pesos { get; set; }
     public ICollection<Guid>? Categorias { get; set; }
+    public decimal? EstoqueReservadoMaiorQue { get; set; }
+    public decimal? EstoqueDisponivelMenorOuIgualA { get; set; }
 }
