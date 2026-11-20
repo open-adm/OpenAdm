@@ -11,8 +11,11 @@ using OpenAdm.Domain.Model;
 
 namespace OpenAdm.Application.Services;
 
-public sealed class LinkBioService(ILinkBioRepository repository, IParceiroRepository parceiroRepository,
-    IUsuarioAutenticado usuarioAutenticado, IParceiroAutenticado parceiroAutenticado,
+public sealed class LinkBioService(
+    ILinkBioRepository repository,
+    IParceiroRepository parceiroRepository,
+    IUsuarioAutenticado usuarioAutenticado,
+    IParceiroAutenticado parceiroAutenticado,
     IUploadImageBlobClient imageUpload) : ILinkBioService
 {
     private const string ConfiguracaoNaoEncontrada = "Não foi possível localizar a configuração do link da bio";
@@ -27,7 +30,8 @@ public sealed class LinkBioService(ILinkBioRepository repository, IParceiroRepos
         return (ResultPartner<LinkBioConfiguracaoViewModel>)Mapear(configuracao);
     }
 
-    public async Task<ResultPartner<LinkBioConfiguracaoViewModel>> CriarOuEditarConfiguracaoAsync(LinkBioConfiguracaoDto dto)
+    public async Task<ResultPartner<LinkBioConfiguracaoViewModel>> CriarOuEditarConfiguracaoAsync(
+        LinkBioConfiguracaoDto dto)
     {
         var erro = ValidarTitulo(dto.Titulo);
         if (erro != null) return (ResultPartner<LinkBioConfiguracaoViewModel>)erro;
@@ -61,6 +65,7 @@ public sealed class LinkBioService(ILinkBioRepository repository, IParceiroRepos
                 imagemAlterada ? nomeNovoBlob : configuracao.NomeBackgroundImage, dto.Ativo);
             repository.AtualizarConfiguracao(configuracao);
         }
+
         await repository.SaveChangesAsync();
         return (ResultPartner<LinkBioConfiguracaoViewModel>)Mapear(configuracao);
     }
@@ -131,7 +136,7 @@ public sealed class LinkBioService(ILinkBioRepository repository, IParceiroRepos
         if (configuracao == null)
             return (ResultPartner<LinkBioPaginaPublicaViewModel>)ConfiguracaoNaoEncontrada;
 
-        var parceiro = await parceiroRepository.ObterPorEmpresaOpenAdmIdAsync(configuracao.EmpresaId);
+        var parceiro = await parceiroRepository.ObterParaLinkBioAsync(configuracao.EmpresaId);
         if (parceiro == null)
             return (ResultPartner<LinkBioPaginaPublicaViewModel>)"Não foi possível localizar a empresa";
 
@@ -156,7 +161,7 @@ public sealed class LinkBioService(ILinkBioRepository repository, IParceiroRepos
         var configuracao = await repository.ObterPaginaPublicaAsync(parceiroAutenticado.Id);
         if (configuracao == null) return (ResultPartner<ResultadoPadraoViewModel>)ConfiguracaoNaoEncontrada;
 
-        var link = await repository.ObterLinkPublicoAsync(linkId, configuracao.Id);
+        var link = configuracao.Links.FirstOrDefault(x => x.Id == linkId);
         if (link == null) return (ResultPartner<ResultadoPadraoViewModel>)LinkNaoEncontrado;
 
         await RegistrarEventoAsync(configuracao, link.Id, TipoEventoLinkBioEnum.Clique);
@@ -180,8 +185,7 @@ public sealed class LinkBioService(ILinkBioRepository repository, IParceiroRepos
         };
     }
 
-    private async Task RegistrarEventoAsync(LinkBioConfiguracao configuracao, Guid? linkId,
-        TipoEventoLinkBioEnum tipo)
+    private async Task RegistrarEventoAsync(LinkBioConfiguracao configuracao, Guid? linkId, TipoEventoLinkBioEnum tipo)
     {
         var data = DateTime.UtcNow;
         await repository.AdicionarEventoAsync(new LinkBioEvento(Guid.NewGuid(), data, data, 0,

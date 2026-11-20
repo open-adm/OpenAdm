@@ -1,11 +1,13 @@
 ﻿using OpenAdm.Domain.Entities;
 using OpenAdm.Domain.Entities.OpenAdm;
+using OpenAdm.Domain.Model;
 
 namespace OpenAdm.Domain.Interfaces;
 
 public interface IParceiroRepository
 {
     Task<Parceiro?> ObterPorEmpresaOpenAdmIdAsync(Guid empresaOpenAdmId);
+    Task<ParceiroLinkBioModel?> ObterParaLinkBioAsync(Guid empresaOpenAdmId);
     void Update(Parceiro parceiro);
     Task<RedeSocial?> ObterRedeSocialAsync(Guid redeSocialId);
     Task<TelefoneParceiro?> ObterTelefoneAsync(Guid telefoneId);

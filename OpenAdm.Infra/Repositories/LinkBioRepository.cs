@@ -13,18 +13,21 @@ public sealed class LinkBioRepository(AppDbContext appDbContext) : ILinkBioRepos
         var query = appDbContext.LinkBioConfiguracoes
             .Include(x => x.Links.Where(link => link.Ativo))
             .AsQueryable();
-        
+
         if (!rastrear)
         {
             query = query.AsNoTracking();
         }
-        
+
         return query.FirstOrDefaultAsync(x => x.EmpresaId == empresaId);
     }
 
-    public Task<LinkBioConfiguracao?> ObterPaginaPublicaAsync(Guid empresaId) => appDbContext.LinkBioConfiguracoes
-        .AsNoTracking().Include(x => x.Links.Where(link => link.Ativo))
-        .FirstOrDefaultAsync(x => x.EmpresaId == empresaId && x.Ativo);
+    public Task<LinkBioConfiguracao?> ObterPaginaPublicaAsync(Guid empresaId) =>
+        appDbContext
+            .LinkBioConfiguracoes
+            .AsNoTracking()
+            .Include(x => x.Links.Where(link => link.Ativo))
+            .FirstOrDefaultAsync(x => x.EmpresaId == empresaId && x.Ativo);
 
     public Task<LinkBioItem?> ObterLinkAsync(Guid id, Guid empresaId) => appDbContext.LinkBioItens
         .Include(x => x.LinkBioConfiguracao)
@@ -38,7 +41,10 @@ public sealed class LinkBioRepository(AppDbContext appDbContext) : ILinkBioRepos
 
     public async Task AdicionarLinkAsync(LinkBioItem link) => await appDbContext.LinkBioItens.AddAsync(link);
     public async Task AdicionarEventoAsync(LinkBioEvento evento) => await appDbContext.LinkBioEventos.AddAsync(evento);
-    public void AtualizarConfiguracao(LinkBioConfiguracao configuracao) => appDbContext.LinkBioConfiguracoes.Update(configuracao);
+
+    public void AtualizarConfiguracao(LinkBioConfiguracao configuracao) =>
+        appDbContext.LinkBioConfiguracoes.Update(configuracao);
+
     public void AtualizarLink(LinkBioItem link) => appDbContext.LinkBioItens.Update(link);
 
     public async Task<(int Visualizacoes, int Cliques, IList<LinkBioEvento> Eventos,

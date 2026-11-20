@@ -4,6 +4,7 @@ using OpenAdm.Domain.Entities;
 using OpenAdm.Domain.Entities.OpenAdm;
 using OpenAdm.Domain.Enuns;
 using OpenAdm.Domain.Interfaces;
+using OpenAdm.Domain.Model;
 
 namespace OpenAdm.Worker.Infra.Repositories;
 
@@ -40,6 +41,13 @@ public class ParceiroRepository : IParceiroRepository
             .Include(x => x.EnderecoParceiro)
             .FirstOrDefaultAsync(x => x.EmpresaOpenAdmId == empresaOpenAdmId);
     }
+
+    public Task<ParceiroLinkBioModel?> ObterParaLinkBioAsync(Guid empresaOpenAdmId) =>
+        _appDbContext.Parceiros
+            .AsNoTracking()
+            .Where(x => x.EmpresaOpenAdmId == empresaOpenAdmId)
+            .Select(x => new ParceiroLinkBioModel(x.NomeFantasia, x.Logo))
+            .FirstOrDefaultAsync();
 
     public Task<RedeSocial?> ObterRedeSocialAsync(Guid redeSocialId)
     {
