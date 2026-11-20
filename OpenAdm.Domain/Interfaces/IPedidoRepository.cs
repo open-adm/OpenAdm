@@ -11,6 +11,8 @@ public interface IPedidoRepository : IGenericRepository<Pedido>
         Guid representanteId);
     Task<ICollection<ItemCobrancaHomeAdmModel>> ListarAsync(IEnumerable<Guid> ids);
     Task<Pedido?> GetPedidoByIdAsync(Guid id);
+    Task<Pedido?> ObterPedidoParaAtualizarStatusAsync(Guid id);
+    Task AddHistoricoAsync(PedidoHistorico historico);
     Task<IList<ItemPedido>> ObterItensDosPedidosAsync(IEnumerable<Guid> ids);
     Task<Pedido?> GetPedidoByUsuarioIdAsync(Guid usuarioId);
     Task<Pedido?> GetPedidoCompletoByIdAsync(Guid id);

@@ -27,24 +27,29 @@ public class UpdateStatusPedidoService : IUpdateStatusPedidoService
 
     public async Task<PedidoViewModel> UpdateStatusPedidoAsync(UpdateStatusPedidoDto updateStatusPedidoDto)
     {
-        var pedido = await _pedidoRepository.GetPedidoByIdAsync(updateStatusPedidoDto.PedidoId)
+        var pedido = await _pedidoRepository.ObterPedidoParaAtualizarStatusAsync(updateStatusPedidoDto.PedidoId)
                      ?? throw new ExceptionApi("Não foi possível localizar o pedido");
         var statusAnterior = pedido.StatusPedido;
         pedido.UpdateStatus(updateStatusPedidoDto.StatusPedido);
-
-        //if (statusAnterior != pedido.StatusPedido)
-        //{
-        //    pedido.Historicos.Add(PedidoHistorico.Novo(
-        //        pedido.Id,
-        //        $"Status do pedido alterado de {statusAnterior} para {pedido.StatusPedido}."));
-        //}
-
         _pedidoRepository.Update(pedido);
 
         if (pedido.StatusPedido == StatusPedido.Entregue)
         {
             await _movimentacaoDeProdutosService.MovimentarItensPedidoAsync(pedido.ItensPedido);
             await _estoqueService.MovimentacaoDePedidoEntregueAsync(pedido.ItensPedido);
+
+            await _pedidoRepository.AddHistoricoAsync(PedidoHistorico.Novo(
+                pedido.Id,
+                "Pedido entregue"));
+        }
+        else
+        {
+            if (statusAnterior != pedido.StatusPedido)
+            {
+                await _pedidoRepository.AddHistoricoAsync(PedidoHistorico.Novo(
+                    pedido.Id,
+                    $"Status do pedido alterado de {statusAnterior} para {pedido.StatusPedido}."));
+            }
         }
 
         await _pedidoRepository.SaveChangesAsync();

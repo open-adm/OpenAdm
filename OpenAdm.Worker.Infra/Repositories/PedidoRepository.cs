@@ -54,6 +54,16 @@ public class PedidoRepository : IPedidoRepository
         throw new NotImplementedException();
     }
 
+    public Task<Pedido?> ObterPedidoParaAtualizarStatusAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task AddHistoricoAsync(PedidoHistorico historico)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<IList<ItemPedido>> ObterItensDosPedidosAsync(IEnumerable<Guid> ids)
     {
         throw new NotImplementedException();

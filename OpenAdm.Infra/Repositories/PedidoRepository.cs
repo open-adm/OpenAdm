@@ -97,6 +97,11 @@ public class PedidoRepository(ParceiroContext parceiroContext)
             }).ToListAsync();
     }
 
+    public async Task AddHistoricoAsync(PedidoHistorico historico)
+    {
+        await ParceiroContext.PedidosHistoricos.AddAsync(historico);
+    }
+
     public async Task<IList<ItemPedido>> ObterItensDosPedidosAsync(IEnumerable<Guid> ids)
     {
         return await ParceiroContext
@@ -118,6 +123,13 @@ public class PedidoRepository(ParceiroContext parceiroContext)
                 NumeroPedido = x.Numero,
                 PedidoId = x.Id
             }).ToListAsync();
+    }
+
+    public Task<Pedido?> ObterPedidoParaAtualizarStatusAsync(Guid id)
+    {
+        return ParceiroContext.Pedidos
+            .Include(x => x.ItensPedido)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<Pedido?> GetPedidoByIdAsync(Guid id)
