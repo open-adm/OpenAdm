@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OpenAdm.Domain.Entities;
 using OpenAdm.Domain.Extensions;
-using OpenAdm.Domain.Model;
 using System.Linq.Expressions;
 using OpenAdm.Domain.PaginateDto;
 
@@ -38,7 +37,7 @@ public class PaginacaoEstoqueDto : FilterModel<Estoque>
             filtros.Add(x => x.TamanhoId == TamanhoId.Value);
         }
 
-        if (filtros.Count == 0 || baseExpression == null)
+        if (filtros.Count == 0)
         {
             return null;
         }

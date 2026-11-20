@@ -100,7 +100,8 @@ public class GenericRepository<T>(ParceiroContext parceiroContext)
             .WhereIsNotNull(filterModel.GetWhereBySearch())
             .WhereIsNotNull(filterModel.Where());
 
-        var (totalPaginas, totalDeRegistros, values) = await query.ProjetarEPaginarAsync(filterModel, select);
+        var (totalPaginas, totalDeRegistros, values) = await query
+            .ProjetarEPaginarAsync(filterModel, select);
 
         return new PaginacaoViewModel<TResult>
         {

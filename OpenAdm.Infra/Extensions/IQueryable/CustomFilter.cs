@@ -34,8 +34,7 @@ public static class CustomFilter
         var totalDeRegistros = await query.CountAsync();
         var totalPaginas = CalcularTotalDePaginas(totalDeRegistros, filterModel.Take);
         var values = await orderedQuery
-            .Skip(filterModel.Skip)
-            .Take(filterModel.Take)
+            .Paginate(filterModel.Skip, filterModel.Take)
             .Select(select)
             .ToListAsync();
 
