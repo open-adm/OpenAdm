@@ -43,12 +43,27 @@ public sealed class Usuario : BaseEntity
         !string.IsNullOrWhiteSpace(Cpf) ? Cpf.FormatCpf() : null;
 
     public bool Ativo { get; private set; }
-    public bool AcessoLiberadoEcommerce => Ativo && !string.IsNullOrWhiteSpace(Telefone);
+    public bool AcessoLiberadoEcommerce => ValidarAcessoEcommerce() is null;
     public Guid? TokenEsqueceuSenha { get; private set; }
     public DateTime? DataExpiracaoTokenEsqueceuSenha { get; private set; }
     public bool IsAtacado => !string.IsNullOrWhiteSpace(Cnpj);
     public EnderecoUsuario? EnderecoUsuario { get; set; }
     public IList<Pedido>? Pedidos { get; set; }
+
+    public string? ValidarAcessoEcommerce()
+    {
+        if (!Ativo)
+        {
+            return "Seu acesso esta bloqueado!";
+        }
+
+        if (!Telefone.TelefoneValido())
+        {
+            return "Seu cadastro esta incompleto, acesse sua conta e cadastre seu telefone!";
+        }
+
+        return null;
+    }
 
     public void EsqueceuSenha()
     {

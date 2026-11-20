@@ -57,10 +57,10 @@ public sealed class CreatePedidoService : ICreatePedidoService
 
         var usuario = await _usuarioAutenticado.GetUsuarioAutenticadoAsync();
 
-        if (string.IsNullOrWhiteSpace(usuario.Telefone))
+        var erroAcesso = usuario.ValidarAcessoEcommerce();
+        if (erroAcesso is not null)
         {
-            return (ResultPartner<CriarPedidoViewModel>)
-                "Seu cadastro esta incompleto, acesse sua conta e cadastre seu telefone!";
+            return (ResultPartner<CriarPedidoViewModel>)erroAcesso;
         }
 
         var cobraFrete = await _configuracaoDeFreteService.CobrarAsync();

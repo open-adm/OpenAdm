@@ -471,6 +471,18 @@ public class PedidoServiceTest
     }
 
     [Fact]
+    public async Task CreatePedidoAsync_DeveRetornarErro_QuandoUsuarioEstaInativo()
+    {
+        var usuario = UsuarioBuilder.Init().Build();
+        usuario.AtivarBloquear();
+        _usuarioAutenticadoMock.Setup(x => x.GetUsuarioAutenticadoAsync()).ReturnsAsync(usuario);
+
+        var result = await _createPedidoService.CreatePedidoAsync(BuildDtoValido());
+
+        Assert.Equal("Seu acesso esta bloqueado!", result.Error);
+    }
+
+    [Fact]
     public async Task CreatePedidoAsync_DeveRetornarErro_QuandoCobraFreteEFreteIdNaoInformado()
     {
         _usuarioAutenticadoMock.Setup(x => x.GetUsuarioAutenticadoAsync()).ReturnsAsync(UsuarioBuilder.Init().Build());

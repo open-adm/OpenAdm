@@ -73,6 +73,17 @@ public static class StringExtensions
         return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
     }
 
+    public static bool TelefoneValido(this string? telefone)
+    {
+        if (string.IsNullOrWhiteSpace(telefone))
+        {
+            return false;
+        }
+
+        var numero = telefone.LimparMascaraTelefone();
+        return (numero.Length is 10 or 11) && numero.All(char.IsAsciiDigit);
+    }
+
     public static string LimparMascaraTelefone(this string telefone)
     {
         return telefone.Replace("(", "").Replace(")", "").Replace("-", "").Replace(" ", "").Trim();
