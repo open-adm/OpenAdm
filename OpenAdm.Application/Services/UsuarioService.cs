@@ -371,9 +371,14 @@ public class UsuarioService : IUsuarioService
             return;
         }
 
+        var documento = string.IsNullOrWhiteSpace(usuario.Cpf)
+            ? $"\n*CNPJ:* {usuario.CpfOuCnpjFormatado}"
+            : $"\n*CPF:* {usuario.CpfOuCnpjFormatado}";
+
         var dados = new NotificarParceiroWhatsAppEvento
         {
-            Mensagem = $"👤 *Novo cliente cadastrado!*\n*Nome:* {usuario.Nome}\n*E-mail:* {usuario.Email}\n*Telefone:* {usuario.Telefone}"
+            Mensagem =
+                $"👤 *Novo cliente cadastrado!*\n*Nome:* {usuario.Nome}\n*E-mail:* {usuario.Email}\n*Telefone:* {usuario.Telefone}{documento}"
         }.ToString();
 
         var evento = EventoAplicacao.Criar(
