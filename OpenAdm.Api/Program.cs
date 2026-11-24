@@ -50,7 +50,7 @@ builder.Services.InjectCqs()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureController();
 builder.Services.InjectServices();
-builder.Services.InjectCors();
+builder.Services.InjectCors(builder.Configuration);
 builder.Services.InjectJwt(keyJwt, issue, audience);
 builder.Services.InjectContext(pgString);
 builder.Services.InjectRepositories(redisString, instanceName);
