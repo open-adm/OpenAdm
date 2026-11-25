@@ -53,13 +53,15 @@ public class AutenticaUsuarioService : IAutenticaUsuarioService
         if (usuario == null)
         {
             await _sessaoUsuarioRepository.DerrubarSessaoAsync(_usuarioAutenticado.SessaoId);
-            return (ResultPartner<bool>)"Seu acesso esta bloqueado!";
+            return (ResultPartner<bool>)"Não foi possível localizar se cadastro!";
         }
 
-        if (!usuario.AcessoLiberadoEcommerce)
+        var erroAcessoBloqueado = usuario.ValidarAcessoEcommerce();
+
+        if (!string.IsNullOrWhiteSpace(erroAcessoBloqueado))
         {
             await _sessaoUsuarioRepository.DerrubarSessaoAsync(_usuarioAutenticado.SessaoId);
-            return (ResultPartner<bool>)"Seu acesso esta bloqueado!";
+            return (ResultPartner<bool>)erroAcessoBloqueado;
         }
 
         return (ResultPartner<bool>)true;

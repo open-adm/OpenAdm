@@ -12,14 +12,14 @@ public static class StringExtensions
             return string.Empty;
 
         return string.Format("({0}) {1}-{2}",
-                             value[..2],
-                             value.Substring(2, 5),
-                             value.Substring(7, 4));
+            value[..2],
+            value.Substring(2, 5),
+            value.Substring(7, 4));
     }
-    
+
     private static readonly CompareInfo CompareInfo =
         CultureInfo.GetCultureInfo("pt-BR").CompareInfo;
-    
+
     public static int Compare(string? x, string? y)
     {
         return CompareInfo.Compare(
@@ -53,6 +53,7 @@ public static class StringExtensions
         {
             text = text.Replace(withDiacritics[i].ToString(), withoutDiacritics[i].ToString());
         }
+
         return text;
     }
 
@@ -74,15 +75,7 @@ public static class StringExtensions
     }
 
     public static bool TelefoneValido(this string? telefone)
-    {
-        if (string.IsNullOrWhiteSpace(telefone))
-        {
-            return false;
-        }
-
-        var numero = telefone.LimparMascaraTelefone();
-        return (numero.Length is 10 or 11) && numero.All(char.IsAsciiDigit);
-    }
+        => !string.IsNullOrWhiteSpace(telefone);
 
     public static string LimparMascaraTelefone(this string telefone)
     {

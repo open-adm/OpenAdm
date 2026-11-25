@@ -43,7 +43,6 @@ public sealed class Usuario : BaseEntity
         !string.IsNullOrWhiteSpace(Cpf) ? Cpf.FormatCpf() : null;
 
     public bool Ativo { get; private set; }
-    public bool AcessoLiberadoEcommerce => ValidarAcessoEcommerce() is null;
     public Guid? TokenEsqueceuSenha { get; private set; }
     public DateTime? DataExpiracaoTokenEsqueceuSenha { get; private set; }
     public bool IsAtacado => !string.IsNullOrWhiteSpace(Cnpj);
