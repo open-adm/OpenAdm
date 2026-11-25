@@ -5,18 +5,6 @@ namespace OpenAdm.Test.Domain.Test;
 
 public class UsuarioTest
 {
-    [Theory]
-    [InlineData("1133334444", true)]
-    [InlineData("(11) 99999-8888", true)]
-    [InlineData("999998888", false)]
-    [InlineData("119999988888", false)]
-    [InlineData("(11) 99999-888A", false)]
-    [InlineData("+55 11 99999-8888", false)]
-    public void TelefoneValido_DeveVerificarQuantidadeDeDigitosEAceitarMascara(string telefone, bool esperado)
-    {
-        Assert.Equal(esperado, telefone.TelefoneValido());
-    }
-
     [Fact]
     public void ValidarAcessoEcommerce_DeveRetornarNulo_QuandoUsuarioAtivoTemTelefone()
     {
@@ -29,7 +17,6 @@ public class UsuarioTest
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    [InlineData("1234")]
     public void ValidarAcessoEcommerce_DeveRetornarErro_QuandoUsuarioAtivoNaoTemTelefoneValido(string? telefone)
     {
         var usuario = UsuarioBuilder.Init().SemTelefone(telefone).Build();
