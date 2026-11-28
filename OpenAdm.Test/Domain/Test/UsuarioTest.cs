@@ -1,5 +1,4 @@
 using OpenAdm.Test.Domain.Builder;
-using OpenAdm.Domain.Extensions;
 
 namespace OpenAdm.Test.Domain.Test;
 

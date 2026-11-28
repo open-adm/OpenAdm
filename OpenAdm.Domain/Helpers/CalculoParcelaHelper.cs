@@ -9,23 +9,6 @@ public class CalculoParcelaHelper
         TipoFaturaEnum tipo,
         IEnumerable<ITransacaoParaCalculo>? transacoes)
     {
-        if (transacoes == null || !transacoes.Any())
-        {
-            return 0;
-        }
-
-        var (tipoPago, tipoEstorno) = tipo == TipoFaturaEnum.APagar
-            ? (TipoTransacaoFinanceiraEnum.Saida, TipoTransacaoFinanceiraEnum.Entrada)
-            : (TipoTransacaoFinanceiraEnum.Entrada, TipoTransacaoFinanceiraEnum.Saida);
-
-        return transacoes.Where(x => x.TipoTransacaoFinanceira == tipoPago).Sum(x => x.ValorLiquido)
-               - transacoes.Where(x => x.TipoTransacaoFinanceira == tipoEstorno).Sum(x => x.ValorLiquido);
-    }
-
-    public static decimal CalcularValorPagoRecebidoLiquido(
-        TipoFaturaEnum tipo,
-        IEnumerable<ITransacaoParaCalculo>? transacoes)
-    {
         return CalcularValorPorTipo(tipo, transacoes, x => x.Valor);
     }
 

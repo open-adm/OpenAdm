@@ -32,9 +32,15 @@ internal class ParcelaConfiguration : IEntityTypeConfiguration<Parcela>
         builder.Property(x => x.Observacao)
             .HasMaxLength(500);
         builder.Ignore(x => x.ValorAPagarAReceber);
-        builder.Ignore(x => x.ValorPagoRecebido);
-        builder.Ignore(x => x.ValorPagoRecebidoLiquido);
-        builder.Ignore(x => x.DescontoConcedido);
+        builder.Ignore(x => x.ValorAbatido);
+        builder.Property(x => x.ValorPagoRecebido)
+            .HasPrecision(14, 2);
+        builder.Property(x => x.DescontoConcedido)
+            .HasPrecision(14, 2);
+        builder.Property(x => x.JurosPagosRecebidos)
+            .HasPrecision(14, 2);
+        builder.Property(x => x.Versao)
+            .IsRowVersion();
         builder.Ignore(x => x.Vencida);
     }
 }

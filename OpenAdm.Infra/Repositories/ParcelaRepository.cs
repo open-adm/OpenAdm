@@ -43,9 +43,7 @@ public sealed class ParcelaRepository : GenericRepository<Parcela>, IParcelaRepo
     {
         return await ParceiroContext
             .Parcelas
-            .AsNoTracking()
             .Include(x => x.Fatura.Usuario)
-            .Include(x => x.Transacoes)
             .Include(x => x.Fatura)
                 .ThenInclude(x => x.Pedido!.ItensPedido)
             .AsSingleQuery()
@@ -64,15 +62,11 @@ public sealed class ParcelaRepository : GenericRepository<Parcela>, IParcelaRepo
             .ToListAsync();
     }
 
-    public async Task<IList<Parcela>> ListaParcelasTotalizadorAsync(TipoFaturaEnum tipoFatura)
+    public Task<decimal> SomarSaldoAsync(TipoFaturaEnum tipoFatura)
     {
-        return await ParceiroContext
-            .Parcelas
-            .AsNoTracking()
-            .Include(x => x.Fatura)
-            .Include(x => x.Transacoes)
+        return ParceiroContext.Parcelas
             .Where(x => x.Fatura.Tipo == tipoFatura && x.Ativo)
-            .ToListAsync();
+            .SumAsync(x => x.Valor - (x.ValorPagoRecebido + x.DescontoConcedido - x.JurosPagosRecebidos));
     }
 
     public async Task<IDictionary<int, decimal>> SumTotalMesesAsync(TipoFaturaEnum faturaEnum)

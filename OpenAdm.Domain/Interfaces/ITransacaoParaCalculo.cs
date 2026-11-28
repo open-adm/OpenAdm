@@ -8,5 +8,4 @@ public interface ITransacaoParaCalculo
     decimal Valor { get; }
     decimal? Desconto { get; }
     decimal? Juros { get; }
-    decimal ValorLiquido => Valor + (Desconto ?? 0) - (Juros ?? 0);
 }

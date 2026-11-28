@@ -104,22 +104,15 @@ public sealed class ParcelaService : IParcelaService
             return;
         }
 
-        await _parcelaRepository
-            .AdicionarTransacaoAsync(
-                new TransacaoFinanceira(
-                    id: Guid.NewGuid(),
-                    dataDeCriacao: DateTime.UtcNow,
-                    dataDeAtualizacao: DateTime.UtcNow,
-                    numero: 0,
-                    parcelaId: parcela.Id,
-                    dataDeEfetivacao: DateTime.UtcNow,
-                    valor: parcela.Valor,
-                    tipoTransacaoFinanceira: TipoTransacaoFinanceiraEnum.Entrada,
-                    meioDePagamento: MeioDePagamentoEnum.Pix,
-                    observacao: "Pagamento efetuado via web hook mercado pago",
-                    foiEstornado: false,
-                    desconto: null,
-                    juros: null));
+        var transacao = parcela.Pagar(
+            valor: parcela.Valor,
+            meioDePagamento: MeioDePagamentoEnum.Pix,
+            observacao: "Pagamento efetuado via web hook mercado pago",
+            dataDePagamento: null,
+            desconto: null,
+            juros: null);
+
+        await _parcelaRepository.AdicionarTransacaoAsync(transacao);
 
         if (parcela.Fatura.PedidoId.HasValue &&
             parcela.Valor >= parcela.Fatura.Pedido?.ValorTotal)
@@ -191,7 +184,6 @@ public sealed class ParcelaService : IParcelaService
 
         var estornos = parcela.Estornar();
         
-        _parcelaRepository.Update(parcela);
         await _parcelaRepository.AdicionarTransacoesAsync(estornos);
         await _parcelaRepository.SaveChangesAsync();
         
@@ -248,11 +240,8 @@ public sealed class ParcelaService : IParcelaService
         return faturas.Select(x => (ParcelaViewModel)x).ToList();
     }
 
-    public async Task<decimal> GetSumAReceberAsync()
-    {
-        var parcelas = await _parcelaRepository.ListaParcelasTotalizadorAsync(TipoFaturaEnum.AReceber);
-        return parcelas.Sum(x => x.ValorAPagarAReceber);
-    }
+    public Task<decimal> GetSumAReceberAsync()
+        => _parcelaRepository.SomarSaldoAsync(TipoFaturaEnum.AReceber);
 
     public async Task<ParcelaViewModel> PagarAsync(PagarParcelaDto pagarFaturaAReceberDto)
     {
@@ -270,9 +259,6 @@ public sealed class ParcelaService : IParcelaService
             juros: pagarFaturaAReceberDto.Juros);
 
         await _parcelaRepository.AdicionarTransacaoAsync(transacao);
-        _parcelaRepository.Update(parcela);
-        await _parcelaRepository.SaveChangesAsync();
-
         await _contasAReceberService.VerificarFechamentoAsync(parcela.FaturaId);
 
         return (ParcelaViewModel)parcela;

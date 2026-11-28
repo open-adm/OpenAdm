@@ -1,9 +1,7 @@
 ﻿using OpenAdm.Domain.Entities.Bases;
 using OpenAdm.Domain.Enuns;
 using OpenAdm.Domain.Exceptions;
-using OpenAdm.Domain.Helpers;
 using OpenAdm.Domain.Extensions;
-using OpenAdm.Domain.Interfaces;
 
 namespace OpenAdm.Domain.Entities;
 
@@ -21,7 +19,11 @@ public sealed class Parcela : BaseEntity
         string? observacao,
         Guid faturaId,
         string? idExterno,
-        decimal? desconto, TipoFaturaEnum tipo, bool quitada, decimal? juros, bool ativo = true)
+        decimal? desconto,
+        TipoFaturaEnum tipo,
+        bool quitada,
+        decimal? juros,
+        bool ativo = true)
         : base(id, dataDeCriacao, dataDeAtualizacao, numero)
     {
         DataDeVencimento = dataDeVencimento;
@@ -50,6 +52,7 @@ public sealed class Parcela : BaseEntity
     public Guid FaturaId { get; private set; }
     public bool Quitada { get; private set; }
     public bool Ativo { get; private set; }
+    public uint Versao { get; private set; }
 
     public void Inativar()
     {
@@ -61,7 +64,7 @@ public sealed class Parcela : BaseEntity
     public void ConsolidarBaixaParcial()
     {
         ValidarAtiva();
-        Valor = ValorPagoRecebido.ArredondarCentavos();
+        Valor = ValorAbatido.ArredondarCentavos();
         Quitada = true;
         DataDeAtualizacao = DateTime.UtcNow;
     }
@@ -91,16 +94,12 @@ public sealed class Parcela : BaseEntity
 
     public Fatura Fatura { get; set; } = null!;
 
-    public decimal ValorAPagarAReceber => Valor - ValorPagoRecebido;
+    public decimal ValorAPagarAReceber => Valor - ValorAbatido;
+    public decimal ValorAbatido => ValorPagoRecebido + DescontoConcedido - JurosPagosRecebidos;
 
-    public decimal ValorPagoRecebido =>
-        CalculoParcelaHelper.CalcularValorPagoRecebido(Tipo, Transacoes?.Cast<ITransacaoParaCalculo>());
-
-    public decimal ValorPagoRecebidoLiquido =>
-        CalculoParcelaHelper.CalcularValorPagoRecebidoLiquido(Tipo, Transacoes?.Cast<ITransacaoParaCalculo>());
-
-    public decimal DescontoConcedido =>
-        CalculoParcelaHelper.CalcularDescontoConcedido(Tipo, Transacoes?.Cast<ITransacaoParaCalculo>());
+    public decimal ValorPagoRecebido { get; private set; }
+    public decimal DescontoConcedido { get; private set; }
+    public decimal JurosPagosRecebidos { get; private set; }
 
     public bool Vencida
     {
@@ -127,12 +126,12 @@ public sealed class Parcela : BaseEntity
     public void AlterarValorAReceber(decimal valorAReceber)
     {
         ValidarAtiva();
-        var valor = ValorPagoRecebido + valorAReceber;
-        if (valor < ValorPagoRecebido)
+        var valor = ValorAbatido + valorAReceber;
+        if (valor < ValorAbatido)
             throw new ExceptionApi("O valor da parcela não pode ficar abaixo do valor recebido!");
 
         Valor = valor.ArredondarCentavos();
-        Quitada = ValorPagoRecebido >= Valor;
+        Quitada = ValorAbatido >= Valor;
         DataDeAtualizacao = DateTime.UtcNow;
     }
 
@@ -151,20 +150,26 @@ public sealed class Parcela : BaseEntity
             throw new ExceptionApi($"A parcela: {NumeroDaParcela} já se encontra paga");
         }
 
-        Quitada = (ValorPagoRecebido + valor + (desconto ?? 0) - (juros ?? 0)) >= Valor;
-
-        return TransacaoFinanceira.NovaTransacao(
+        var transacao = TransacaoFinanceira.NovaTransacao(
             parcelaId: Id,
             dataDeEfetivacao: dataDePagamento,
-            valor: valor,
+            valor: valor.ArredondarCentavos(),
             tipoTransacaoFinanceira: Tipo == TipoFaturaEnum.APagar
                 ? TipoTransacaoFinanceiraEnum.Saida
                 : TipoTransacaoFinanceiraEnum.Entrada,
             meioDePagamento: meioDePagamento,
             observacao: observacao ?? $"Pagamento da parcela: {NumeroDaParcela}",
             foiEstornado: false,
-            juros: juros,
-            desconto: desconto);
+            juros: juros?.ArredondarCentavos(),
+            desconto: desconto?.ArredondarCentavos());
+
+        ValorPagoRecebido += transacao.Valor;
+        DescontoConcedido += transacao.Desconto ?? 0;
+        JurosPagosRecebidos += transacao.Juros ?? 0;
+        Quitada = ValorAbatido >= Valor;
+        DataDeAtualizacao = DateTime.UtcNow;
+
+        return transacao;
     }
 
     public IList<TransacaoFinanceira> Estornar()
@@ -193,6 +198,9 @@ public sealed class Parcela : BaseEntity
             estornos.Add(estorno);
         }
 
+        ValorPagoRecebido = 0;
+        DescontoConcedido = 0;
+        JurosPagosRecebidos = 0;
         Quitada = false;
         DataDeAtualizacao = DateTime.UtcNow;
 

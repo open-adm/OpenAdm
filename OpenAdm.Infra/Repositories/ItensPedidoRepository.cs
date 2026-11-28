@@ -33,7 +33,6 @@ public class ItensPedidoRepository : GenericRepository<ItemPedido>, IItensPedido
             .Include(x => x.Pedido)
             .ThenInclude(x => x.Fatura)
             .ThenInclude(x => x!.Parcelas)
-            .ThenInclude(x => x.Transacoes)
             .Include(x => x.Pedido)
             .ThenInclude(x => x.Cobranca)
             .FirstOrDefaultAsync(x => x.Id == id && !x.Pedido.Excluido);

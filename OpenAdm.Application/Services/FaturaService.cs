@@ -176,13 +176,16 @@ public sealed class FaturaService : IFaturaService
 
             if (parcelaDto.AVista)
             {
-                parcela.Pagar(
-                    valor: valorParcela,
-                    meioDePagamento: parcelaDto.MeioDePagamento,
-                    observacao: "Pagamento à vista na negociação da cobrança",
-                    dataDePagamento: data,
-                    desconto: null,
-                    juros: null);
+                parcela.Transacoes =
+                [
+                    parcela.Pagar(
+                        valor: valorParcela,
+                        meioDePagamento: parcelaDto.MeioDePagamento,
+                        observacao: "Pagamento à vista na negociação da cobrança",
+                        dataDePagamento: data,
+                        desconto: null,
+                        juros: null)
+                ];
             }
 
             fatura.Parcelas.Add(parcela);
@@ -236,10 +239,10 @@ public sealed class FaturaService : IFaturaService
                 continue;
             }
 
-            if (parcela.ValorPagoRecebido > 0)
+            if (parcela.ValorPagoRecebido > 0 || parcela.ValorAbatido > 0)
             {
                 parcelasPreservadas.Add(parcela);
-                if (parcela.Valor > parcela.ValorPagoRecebido)
+                if (parcela.ValorAPagarAReceber > 0)
                     baixasParciaisParaConsolidar.Add(parcela);
                 continue;
             }
@@ -270,8 +273,8 @@ public sealed class FaturaService : IFaturaService
                 "A fatura já possui números repetidos entre parcelas ativas preservadas!";
 
         var totalPreservado = parcelasPreservadas.Sum(x =>
-            x.ValorPagoRecebido > 0
-                ? x.ValorPagoRecebido.ArredondarCentavos()
+            x.ValorPagoRecebido > 0 || x.ValorAbatido > 0
+                ? x.ValorAbatido.ArredondarCentavos()
                 : x.Valor);
         erro = dto.ValidarTotal(fatura.Total - totalPreservado, parcelasParaCriar);
         if (erro != null)

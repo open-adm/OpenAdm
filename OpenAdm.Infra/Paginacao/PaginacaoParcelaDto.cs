@@ -80,6 +80,6 @@ public class PaginacaoParcelaDto : FilterModel<Parcela>
 
     public override IList<Expression<Func<Parcela, object>>> IncludeCustomList()
     {
-        return [x => x.Fatura.Usuario, x => x.Fatura.Pedido!, x => x.Transacoes!];
+        return [x => x.Fatura.Usuario, x => x.Fatura.Pedido!];
     }
 }

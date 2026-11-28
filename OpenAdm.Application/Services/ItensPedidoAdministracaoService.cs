@@ -119,9 +119,9 @@ public sealed class ItensPedidoAdministracaoService(
     {
         if (pedido.Fatura == null)
             return null;
-        if (novoTotal < pedido.Fatura.ValorPagoRecebido)
-            return "Não é possível reduzir o pedido para um valor abaixo do recebido!";
-        if (novoTotal > pedido.Fatura.ValorPagoRecebido &&
+        if (novoTotal < pedido.Fatura.ValorAbatido)
+            return "Não é possível reduzir o pedido para um valor abaixo do que já foi abatido!";
+        if (novoTotal > pedido.Fatura.ValorAbatido &&
             pedido.Fatura.Parcelas.All(x => !x.Ativo))
             return "Não existem parcelas ativas para ratear o valor a receber!";
         return null;

@@ -36,7 +36,6 @@ public sealed class FaturaRepository : GenericRepository<Fatura>, IFaturaReposit
     {
         return await ParceiroContext.Faturas
             .Include(x => x.Parcelas)
-            .ThenInclude(x => x.Transacoes)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 

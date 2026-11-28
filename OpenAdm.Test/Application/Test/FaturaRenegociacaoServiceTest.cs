@@ -21,12 +21,7 @@ public class FaturaRenegociacaoServiceTest
         var parcial = Parcela.NovaFatura(DateTime.UtcNow.Date, 1, null, 100, null,
             fatura.Id, null, null, null, tipo);
         parcial.Fatura = fatura;
-        parcial.Transacoes =
-        [
-            TransacaoFinanceira.NovaTransacao(parcial.Id, DateTime.UtcNow, 30,
-                tipo == TipoFaturaEnum.APagar ? TipoTransacaoFinanceiraEnum.Saida
-                    : TipoTransacaoFinanceiraEnum.Entrada, null, null, false, null, null)
-        ];
+        parcial.Pagar(30, null, null, DateTime.UtcNow, null, null);
         var quitada = Parcela.NovaFatura(DateTime.UtcNow.Date, 2, null, 30, null,
             fatura.Id, null, null, null, tipo);
         quitada.Fatura = fatura;
@@ -90,11 +85,7 @@ public class FaturaRenegociacaoServiceTest
         var fatura = FaturaBuilder.Init().ComTotal(100).Build();
         var antiga = Parcela.NovaFatura(DateTime.UtcNow.Date, 1, null, 100, null,
             fatura.Id, null, null, null, TipoFaturaEnum.AReceber);
-        antiga.Transacoes =
-        [
-            TransacaoFinanceira.NovaTransacao(antiga.Id, DateTime.UtcNow, 30,
-                TipoTransacaoFinanceiraEnum.Entrada, null, null, false, null, null)
-        ];
+        antiga.Pagar(30, null, null, DateTime.UtcNow, null, null);
         fatura.Parcelas.Add(antiga);
 
         var repository = new Mock<IFaturaRepository>();
@@ -135,11 +126,7 @@ public class FaturaRenegociacaoServiceTest
         var fatura = FaturaBuilder.Init().ComTotal(100).Build();
         var antiga = Parcela.NovaFatura(DateTime.UtcNow.Date, 1, null, 100, null,
             fatura.Id, null, null, null, TipoFaturaEnum.AReceber);
-        antiga.Transacoes =
-        [
-            TransacaoFinanceira.NovaTransacao(antiga.Id, DateTime.UtcNow, 30,
-                TipoTransacaoFinanceiraEnum.Entrada, null, null, false, null, null)
-        ];
+        antiga.Pagar(30, null, null, DateTime.UtcNow, null, null);
         fatura.Parcelas.Add(antiga);
         var repository = new Mock<IFaturaRepository>();
         repository.Setup(x => x.ObterParaRenegociarAsync(fatura.Id)).ReturnsAsync(fatura);
@@ -168,11 +155,7 @@ public class FaturaRenegociacaoServiceTest
         var fatura = FaturaBuilder.Init().ComTotal(100).Build();
         var antiga = Parcela.NovaFatura(DateTime.UtcNow.Date, 1, null, 100, null,
             fatura.Id, null, null, null, TipoFaturaEnum.AReceber);
-        antiga.Transacoes =
-        [
-            TransacaoFinanceira.NovaTransacao(antiga.Id, DateTime.UtcNow, 30,
-                TipoTransacaoFinanceiraEnum.Entrada, null, null, false, null, null)
-        ];
+        antiga.Pagar(30, null, null, DateTime.UtcNow, null, null);
         fatura.Parcelas.Add(antiga);
         var repository = new Mock<IFaturaRepository>();
         repository.Setup(x => x.ObterParaRenegociarAsync(fatura.Id)).ReturnsAsync(fatura);
@@ -224,11 +207,7 @@ public class FaturaRenegociacaoServiceTest
         var fatura = FaturaBuilder.Init().ComTotal(100).Build();
         var antiga = Parcela.NovaFatura(DateTime.UtcNow.Date, 1, null, 100, null,
             fatura.Id, null, null, null, TipoFaturaEnum.AReceber);
-        antiga.Transacoes =
-        [
-            TransacaoFinanceira.NovaTransacao(antiga.Id, DateTime.UtcNow, 30,
-                TipoTransacaoFinanceiraEnum.Entrada, null, null, false, null, null)
-        ];
+        antiga.Pagar(30, null, null, DateTime.UtcNow, null, null);
         fatura.Parcelas.Add(antiga);
         var repository = new Mock<IFaturaRepository>();
         repository.Setup(x => x.ObterParaRenegociarAsync(fatura.Id)).ReturnsAsync(fatura);
@@ -333,11 +312,7 @@ public class FaturaRenegociacaoServiceTest
         var vencimento = DateTime.UtcNow.Date.AddDays(30);
         var parcial = Parcela.NovaFatura(vencimento, 1, null, 50, null,
             fatura.Id, null, null, null, TipoFaturaEnum.AReceber);
-        parcial.Transacoes =
-        [
-            TransacaoFinanceira.NovaTransacao(parcial.Id, DateTime.UtcNow, 20,
-                TipoTransacaoFinanceiraEnum.Entrada, null, null, false, null, null)
-        ];
+        parcial.Pagar(20, null, null, DateTime.UtcNow, null, null);
         var igual = Parcela.NovaFatura(vencimento, 2, null, 50, null,
             fatura.Id, null, null, null, TipoFaturaEnum.AReceber);
         fatura.Parcelas.Add(parcial);
@@ -453,18 +428,10 @@ public class FaturaRenegociacaoServiceTest
         var fatura = FaturaBuilder.Init().ComTotal(100).Build();
         var primeira = Parcela.NovaFatura(DateTime.UtcNow.Date, 1, null, 50, null,
             fatura.Id, null, null, null, TipoFaturaEnum.AReceber);
-        primeira.Transacoes =
-        [
-            TransacaoFinanceira.NovaTransacao(primeira.Id, DateTime.UtcNow, 20,
-                TipoTransacaoFinanceiraEnum.Entrada, null, null, false, null, null)
-        ];
+        primeira.Pagar(20, null, null, DateTime.UtcNow, null, null);
         var segunda = Parcela.NovaFatura(DateTime.UtcNow.Date, 2, null, 50, null,
             fatura.Id, null, null, null, TipoFaturaEnum.AReceber);
-        segunda.Transacoes =
-        [
-            TransacaoFinanceira.NovaTransacao(segunda.Id, DateTime.UtcNow, 10,
-                TipoTransacaoFinanceiraEnum.Entrada, null, null, false, null, null)
-        ];
+        segunda.Pagar(10, null, null, DateTime.UtcNow, null, null);
         fatura.Parcelas.Add(primeira);
         fatura.Parcelas.Add(segunda);
         var repository = new Mock<IFaturaRepository>();

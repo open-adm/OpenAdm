@@ -7,6 +7,7 @@ public class ParcelaBuilder
 {
     private Guid _faturaId = Guid.NewGuid();
     private string? _idExterno;
+    private TipoFaturaEnum _tipo = TipoFaturaEnum.AReceber;
 
     public static ParcelaBuilder Init() => new();
 
@@ -22,6 +23,12 @@ public class ParcelaBuilder
         return this;
     }
 
+    public ParcelaBuilder ComTipo(TipoFaturaEnum tipo)
+    {
+        _tipo = tipo;
+        return this;
+    }
+
     public Parcela Build() => Parcela.NovaFatura(
         DateTime.UtcNow.AddDays(30),
         1,
@@ -32,5 +39,5 @@ public class ParcelaBuilder
         _idExterno,
         null,
         null,
-        TipoFaturaEnum.AReceber);
+        _tipo);
 }

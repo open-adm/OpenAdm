@@ -33,7 +33,7 @@ public sealed class Fatura : BaseEntity
     public Guid UsuarioId { get; private set; }
     public Usuario Usuario { get; set; } = null!;
     public Guid? PedidoId { get; private set; }
-    public bool Quitada => Tipo == TipoFaturaEnum.Bonificado || ValorPagoRecebido >= Total;
+    public bool Quitada => Tipo == TipoFaturaEnum.Bonificado || ValorAbatido >= Total;
     public Pedido? Pedido { get; set; }
     public DateTime? DataDeFechamento { get; private set; }
     public IList<Parcela> Parcelas { get; set; } = [];
@@ -51,6 +51,8 @@ public sealed class Fatura : BaseEntity
         get { return Parcelas.Where(x => x.Ativo).Sum(x => x.ValorPagoRecebido); }
     }
 
+    public decimal ValorAbatido => Parcelas.Where(x => x.Ativo).Sum(x => x.ValorAbatido);
+
     public void AlterarTotal(decimal total)
     {
         Total = total;
@@ -59,10 +61,10 @@ public sealed class Fatura : BaseEntity
 
     public void AjustarValorAReceber(decimal total)
     {
-        if (total < ValorPagoRecebido)
+        if (total < ValorAbatido)
             throw new ExceptionApi("O valor do pedido não pode ficar abaixo do valor recebido!");
 
-        var valorAReceber = (total - ValorPagoRecebido).ArredondarCentavos();
+        var valorAReceber = (total - ValorAbatido).ArredondarCentavos();
         var parcelas = Parcelas.Where(x => x.Ativo).ToList();
         var parcelasAReceber = parcelas.Where(x => x.ValorAPagarAReceber > 0).ToList();
         if (valorAReceber > 0 && parcelasAReceber.Count == 0)

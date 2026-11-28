@@ -15,7 +15,6 @@ public class ParcelaViewModel : BaseViewModel
     public decimal Valor { get; set; }
     public bool Ativo { get; set; }
     public decimal ValorPagoRecebido { get; set; }
-    public decimal ValorPagoRecebidoLiquido { get; set; }
     public decimal DescontoConcedido { get; set; }
     public decimal ValorAPagarAReceber { get; set; }
     public decimal? Desconto { get; set; }
@@ -62,7 +61,6 @@ public class ParcelaViewModel : BaseViewModel
             Juros = faturaContasAReceber.Juros,
             ValorAPagarAReceber = faturaContasAReceber.ValorAPagarAReceber,
             ValorPagoRecebido = faturaContasAReceber.ValorPagoRecebido,
-            ValorPagoRecebidoLiquido = faturaContasAReceber.ValorPagoRecebidoLiquido,
             DescontoConcedido = faturaContasAReceber.DescontoConcedido,
             Vencida = faturaContasAReceber.Vencida
         };
