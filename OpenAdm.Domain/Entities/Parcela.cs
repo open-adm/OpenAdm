@@ -69,27 +69,17 @@ public sealed class Parcela : BaseEntity
         DataDeAtualizacao = DateTime.UtcNow;
     }
 
-    public StatusParcelaEnum Status
+    public StatusParcelaEnum Status => ObterStatus(Quitada, DataDeVencimento, ValorPagoRecebido);
+
+    public static StatusParcelaEnum ObterStatus(bool quitada, DateTime vencimento, decimal valorPagoRecebido)
     {
-        get
-        {
-            if (Quitada)
-            {
-                return StatusParcelaEnum.Pago;
-            }
-            
-            if (Vencida)
-            {
-                return StatusParcelaEnum.Vencida;
-            }
+        if (quitada)
+            return StatusParcelaEnum.Pago;
 
-            if (ValorPagoRecebido > 0)
-            {
-                return StatusParcelaEnum.PagoParcial;
-            }
+        if (vencimento.Date < DateTime.UtcNow.Date)
+            return StatusParcelaEnum.Vencida;
 
-            return StatusParcelaEnum.Pendente;
-        }
+        return valorPagoRecebido > 0 ? StatusParcelaEnum.PagoParcial : StatusParcelaEnum.Pendente;
     }
 
     public Fatura Fatura { get; set; } = null!;

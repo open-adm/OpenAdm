@@ -267,22 +267,43 @@ public sealed class ParcelaService : IParcelaService
     public async Task<PaginacaoViewModel<ParcelaPaginacaoViewModel>> PaginacaoAsync(
         FilterModel<Parcela> paginacaoFaturaAReceberDto)
     {
-        var paginacao = await _parcelaRepository
-            .PaginacaoAsync(paginacaoFaturaAReceberDto);
+        var paginacao = await _parcelaRepository.PaginacaoProjetadaAsync(
+            paginacaoFaturaAReceberDto,
+            parcela => new
+            {
+                Parcela = new ParcelaPaginacaoViewModel
+                {
+                    Id = parcela.Id,
+                    NumeroFatura = parcela.Fatura.Numero,
+                    FaturaId = parcela.FaturaId,
+                    NumeroDaParcela = parcela.NumeroDaParcela,
+                    NumeroPedido = parcela.Fatura.Pedido == null ? null : parcela.Fatura.Pedido.Numero,
+                    Valor = parcela.Valor,
+                    ValorPagoRecebido = parcela.ValorPagoRecebido,
+                    DescontoConcedido = parcela.DescontoConcedido,
+                    Vencimento = parcela.DataDeVencimento,
+                    Ativo = parcela.Ativo,
+                    NomeUsuario = parcela.Fatura.Usuario.Nome,
+                    Quitada = parcela.Quitada
+                },
+                parcela.JurosPagosRecebidos
+            });
 
-        var parcelasViewModel = new List<ParcelaPaginacaoViewModel>();
-
-        foreach (var parcela in paginacao.Values)
+        var parcelas = new List<ParcelaPaginacaoViewModel>();
+        foreach (var item in paginacao.Values)
         {
-            var parcelaViewModel = (ParcelaPaginacaoViewModel)parcela;
-            parcelasViewModel.Add(parcelaViewModel);
+            var parcela = item.Parcela;
+            parcela.ValorAPagarAReceber = parcela.Valor -
+                (parcela.ValorPagoRecebido + parcela.DescontoConcedido - item.JurosPagosRecebidos);
+            parcela.Status = Parcela.ObterStatus(parcela.Quitada, parcela.Vencimento, parcela.ValorPagoRecebido);
+            parcelas.Add(parcela);
         }
 
-        return new PaginacaoViewModel<ParcelaPaginacaoViewModel>()
+        return new PaginacaoViewModel<ParcelaPaginacaoViewModel>
         {
+            Values = parcelas,
             TotalDeRegistros = paginacao.TotalDeRegistros,
-            Values = parcelasViewModel,
-            TotalPaginas = paginacao.TotalPaginas,
+            TotalPaginas = paginacao.TotalPaginas
         };
     }
 }

@@ -77,9 +77,4 @@ public class PaginacaoParcelaDto : FilterModel<Parcela>
             _ => throw new ExceptionApi("Status da parcela inválido.")
         };
     }
-
-    public override IList<Expression<Func<Parcela, object>>> IncludeCustomList()
-    {
-        return [x => x.Fatura.Usuario, x => x.Fatura.Pedido!];
-    }
 }
